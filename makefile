@@ -7,6 +7,7 @@ OBJs= \
  fat.o \
  pbs.o \
  pfe.o \
+ fileio.o \
  main.o
 
 REBUILDABLES = $(OBJs) $(LINK_TARGET)
@@ -35,6 +36,9 @@ sectors.o: sectors.c
 fat.o: fat.c
 	$(CC) -c $<
 
+fileio.o: fileio.c
+	$(CC) -c $<
+
 clean:
 	rm $(REBUILDABLES)
 	rm *~
@@ -49,3 +53,4 @@ main.o: common.h pbs.h
 pbs.o: common.h
 pfe.o: common.h pfe.h
 sectors.o: common.h sectors.h
+fileio.o: common.h
