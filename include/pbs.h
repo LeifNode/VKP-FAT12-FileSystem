@@ -4,7 +4,7 @@
 #include "common.h"
 
 #pragma pack(push)
-#pragma pack(8)
+#pragma pack(1)
 
 /// \struct BOOT_SECTOR
 /// \brief A struct that stores boot sector information

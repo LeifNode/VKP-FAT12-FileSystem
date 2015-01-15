@@ -4,7 +4,7 @@
 #include "common.h"
 
 #pragma pack(push)
-#pragma pack(8)
+#pragma pack(1)
 
 typedef struct FILE_HEADER
 {
@@ -32,12 +32,12 @@ typedef struct FILE_HEADER
 
 typedef enum FILE_ATTRIBUTE
 {
-  FILE_ATTRIBUTE_READONLY     = 1,
-  FILE_ATTRIBUTE_HIDDEN       = 1 << 1,
-  FILE_ATTRIBUTE_SYSTEM       = 1 << 2,
-  FILE_ATTRIBUTE_VOLUME_LABEL = 1 << 3,
-  FILE_ATTRIBUTE_SUBDIRECTORY = 1 << 4,
-  FILE_ATTRIBUTE_ARCHIVE      = 1 << 5
+  FILE_ATTR_READONLY     = 1,
+  FILE_ATTR_HIDDEN       = 1 << 1,
+  FILE_ATTR_SYSTEM       = 1 << 2,
+  FILE_ATTR_VOLUME_LABEL = 1 << 3,
+  FILE_ATTR_SUBDIRECTORY = 1 << 4,
+  FILE_ATTR_ARCHIVE      = 1 << 5
 } FILE_ATTRIBUTE;
 
 void printFileHeader(const FILE_HEADER* header);

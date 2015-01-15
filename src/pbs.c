@@ -24,9 +24,18 @@ void printBootSector()
     printf("Number of heads              = %d\n", PBS_BOOT_SEC.number_of_heads);
     printf("Boot signiture (in hex)      = 0x%x\n", PBS_BOOT_SEC.boot_signature);
     printf("Volume ID (in hex)           = 0x%x\n", PBS_BOOT_SEC.volume_id);
-    printf("Volume label                 = ");
-
+	printf("OEM Name                     = ");
+	
+	
     int i = 0;
+	
+    for (i = 0; i < 8 || PBS_BOOT_SEC.OEM_name[i] == '\0'; i++)
+    {
+        printf("%c", PBS_BOOT_SEC.OEM_name[i]);
+    }
+
+	printf("\nVolume label                 = ");
+	
     for (i = 0; i < 11 || PBS_BOOT_SEC.volume_label[i] == '\0'; i++)
     {
         printf("%c", PBS_BOOT_SEC.volume_label[i]);
