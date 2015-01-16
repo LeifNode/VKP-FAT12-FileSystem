@@ -26,24 +26,21 @@ void printBootSector()
     printf("Volume ID (in hex)           = 0x%x\n", PBS_BOOT_SEC.volume_id);
 	printf("OEM Name                     = ");
 	
-	
-    int i = 0;
-	
-    for (i = 0; i < 8 || PBS_BOOT_SEC.OEM_name[i] == '\0'; i++)
+    for (int i = 0; i < 8 || PBS_BOOT_SEC.OEM_name[i] == '\0'; i++)
     {
         printf("%c", PBS_BOOT_SEC.OEM_name[i]);
     }
 
 	printf("\nVolume label                 = ");
 	
-    for (i = 0; i < 11 || PBS_BOOT_SEC.volume_label[i] == '\0'; i++)
+    for (int i = 0; i < 11 || PBS_BOOT_SEC.volume_label[i] == '\0'; i++)
     {
         printf("%c", PBS_BOOT_SEC.volume_label[i]);
     }
     
     printf("\nFile system type             = ");
 
-    for (i = 0; i < 8 || PBS_BOOT_SEC.file_system_type[i] == '\0'; i++)
+    for (int i = 0; i < 8 || PBS_BOOT_SEC.file_system_type[i] == '\0'; i++)
     {
         printf("%c", PBS_BOOT_SEC.file_system_type[i]);
     }

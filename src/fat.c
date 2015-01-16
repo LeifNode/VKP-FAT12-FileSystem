@@ -29,7 +29,7 @@ unsigned int get_fat_entry(int fat_entry_number, unsigned char* fat)
 void set_fat_entry(int fat_entry_number, int value, unsigned char* fat)
 {
   int offset;
-  int uv, wx, yz, a, b, c;
+  int a, b, c;
 
   offset = 3 * fat_entry_number / 2;
 
