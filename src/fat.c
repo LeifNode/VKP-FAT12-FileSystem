@@ -1,4 +1,5 @@
 #include "fat.h"
+#include "sectors.h"
 
 unsigned int get_fat_entry(int fat_entry_number, unsigned char* fat)
 {

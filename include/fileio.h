@@ -42,4 +42,7 @@ typedef enum FILE_ATTRIBUTE
 
 void printFileHeader(const FILE_HEADER* header);
 
+//Should probably have an int/enum return that signifies success/failure and reason for failure
+void readFile(const FILE_HEADER* header, void** buffer);
+
 #endif

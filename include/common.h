@@ -17,5 +17,4 @@
 
 extern uint16_t BYTES_PER_SECTOR;
 
-
 #endif

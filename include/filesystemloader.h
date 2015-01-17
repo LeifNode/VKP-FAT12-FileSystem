@@ -1,5 +1,5 @@
-#ifndef FILESYSTEM_H
-#define FILESYSTEM_H
+#ifndef FILESYSTEMLOADER_H
+#define FILESYSTEMLOADER_H
 
 #include "common.h"
 
