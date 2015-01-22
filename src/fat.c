@@ -61,3 +61,21 @@ void set_fat_entry(int fat_entry_number, int value, unsigned char* fat)
                                           0x00f0)  |  (a >> 8));
     }
 }
+
+uint16_t get_free_sector_count()
+{
+	void* fat_sector = find_sector(1);
+
+	int totalUsed = 0;
+
+	//Number of FAT entries per FAT is 384 in theory
+	for (int i = 2; i < 384; i++)
+	{
+		if (get_fat_entry(i, fat_sector) == 0x000)
+		{
+			totalUsed++;
+		}
+	}
+
+	return totalUsed;
+}
