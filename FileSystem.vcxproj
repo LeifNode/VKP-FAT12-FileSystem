@@ -82,7 +82,6 @@
     <ClInclude Include="include\common.h" />
     <ClInclude Include="include\fat.h" />
     <ClInclude Include="include\fileio.h" />
-    <ClInclude Include="include\filesystemloader.h" />
     <ClInclude Include="include\header.h" />
     <ClInclude Include="include\ls.h" />
     <ClInclude Include="include\pbs.h" />
@@ -93,7 +92,6 @@
     <ClCompile Include="src\cat.c" />
     <ClCompile Include="src\fat.c" />
     <ClCompile Include="src\fileio.c" />
-    <ClCompile Include="src\filesystemloader.cpp" />
     <ClCompile Include="src\ls.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\pbs.c" />

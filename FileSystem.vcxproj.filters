@@ -36,9 +36,6 @@
     <ClInclude Include="include\fat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\filesystemloader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\ls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -63,9 +60,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\fat.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\filesystemloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ls.c">

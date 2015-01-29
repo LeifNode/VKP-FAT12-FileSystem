@@ -58,8 +58,3 @@ void* find_sector(uint32_t sector_number)
 {
 	return (void*)((long)FILE_SYSTEM + (long)sector_number * (long)BYTES_PER_SECTOR);
 }
-
-void* allocSector()
-{
-	return malloc(BYTES_PER_SECTOR);
-}

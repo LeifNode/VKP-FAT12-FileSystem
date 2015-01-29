@@ -1,6 +1,6 @@
 #include "cat.h"
 
-void cat(const FILE_HEADER* file)
+void cat(const FILE_HEADER_REG* file)
 {
 	void* buffer = NULL;
 

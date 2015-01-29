@@ -2,28 +2,75 @@
 #include "fat.h"
 #include "sectors.h"
 
-void printFileHeader(const FILE_HEADER* header)
+void getNameFromLongNameFileHeader(const FILE_HEADER_LONGNAME *header, wchar_t *name)
 {
-    printf("File name               = ");
-    
-    for(int i = 0; i < 8; i++)
-    {
-        printf("%c", header->file_name[i]);
-    }
+	//This only works if wchar_t is 16 bits long.
+	/*memcpy(name, header->name1, 5);
+	memcpy(name + 5, header->name2, 6);
+	memcpy(name + 11, header->name3, 2);*/
 
-    printf("\nExtension               = ");
-    
-    for(int i = 0; i < 8; i++)
-    {
-        printf("%c", header->extension[i]);
-    }
-    
-    printf("\nAttributes              = %x\n", header->attributes);
-    printf("First logical cluster   = %d\n", header->first_logical_cluster);
-    printf("File size               = %dB\n", header->file_size); 
+	for (size_t i = 0; i < 5; ++i)
+	{
+		name[i] = header->name1[i];
+	}
+
+	for (size_t i = 0; i < 6; ++i)
+	{
+		name[i+5] = header->name2[i];
+	}
+
+	for (size_t i = 0; i < 2; ++i)
+	{
+		name[i + 11] = header->name3[i];
+	}
+
+	//null terminate
+	name[13] = 0x0000;
 }
 
-void readFile(const FILE_HEADER* header, void** buffer)
+void printFileHeader(const FILE_HEADER* header)
+{
+	if (header->header.attributes == 0x0f)
+	{
+		printf("Index: %u\n", header->longname_header.index);
+		printf("Long File name          = ");
+		for (uint32_t i = 0; i < 5; ++i)
+		{
+			printf("%c", header->longname_header.name1[i]);
+		}
+		for (uint32_t i = 0; i < 6; ++i)
+		{
+			printf("%c", header->longname_header.name2[i]);
+		}
+		for (uint32_t i = 0; i < 2; ++i)
+		{
+			printf("%c", header->longname_header.name3[i]);
+		}
+		printf("\nType: %u\n", header->longname_header.type);
+	}
+	else
+	{
+		printf("File name               = ");
+
+		for (int i = 0; i < 8; i++)
+		{
+			printf("%c", header->header.file_name[i]);
+		}
+
+		printf("\nExtension               = ");
+
+		for (int i = 0; i < 3; i++)
+		{
+			printf("%c", header->header.extension[i]);
+		}
+
+		printf("\nAttributes              = %x\n", header->header.attributes);
+		printf("First logical cluster   = %d\n", header->header.first_logical_cluster);
+		printf("File size               = %dB\n", header->header.file_size);
+	}
+}
+
+void readFile(const FILE_HEADER_REG* header, void** buffer)
 {
 	if (header->first_logical_cluster == 0)
 	{
@@ -47,14 +94,14 @@ void readFile(const FILE_HEADER* header, void** buffer)
 	//How many sectors we have read so far
 	uint16_t current_sector_offset = 0;
 
-	do 
+	do
 	{
 		current_cluster = next_cluster;
 		next_cluster = get_fat_entry(current_cluster, (unsigned char*)fat_sector);
 
 		uint32_t data_sector = current_cluster + 31; //Offset into data area
 
-		
+
 		void* source_mem = find_sector(data_sector);
 		//If we're at the last sector then only copy the memory required to reach the end of the file
 		size_t mem_size = BYTES_PER_SECTOR;

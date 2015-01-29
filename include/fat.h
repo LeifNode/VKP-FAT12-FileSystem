@@ -6,6 +6,8 @@
 unsigned int get_fat_entry(int fat_entry_number, unsigned char* fat);
 void set_fat_entry(int fat_entry_number, int value, unsigned char* fat);
 
+///@brief Gets the number of free sectors on disk.
+///@return	Returns a uint16_t.
 uint16_t get_free_sector_count();
 
 #endif
