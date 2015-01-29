@@ -8,6 +8,6 @@
 #include "fileio.h"
 #include "filesystemloader.h"
 
-#include <cassert>
+#include <assert.h>
 
 #endif
