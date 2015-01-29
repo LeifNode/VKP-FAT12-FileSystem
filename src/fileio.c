@@ -72,23 +72,23 @@ void printFileHeader(const FILE_HEADER* header)
 
 void readFile(const FILE_HEADER* header, void** buffer)
 {
-	if (header->first_logical_cluster == 0)
+	if (header->header.first_logical_cluster == 0)
 	{
 		printf("Invalid file header passed to readFile()\n");
 		return;
 	}
-	if ((header->attributes & FILE_ATTR_SUBDIRECTORY) == 1)
+	if ((header->header.attributes & FILE_ATTR_SUBDIRECTORY) == 1)
 	{
 		printf("Directory header passed to readFile()\n");
 		return;
 	}
 
-	void* fileBuffer = malloc(header->file_size);
+	void* fileBuffer = malloc(header->header.file_size);
 	*buffer = fileBuffer;
 
 	void* fat_sector = find_sector(1);
 
-	uint16_t current_cluster = header->first_logical_cluster;
+	uint16_t current_cluster = header->header.first_logical_cluster;
 	uint16_t next_cluster = current_cluster;
 
 	//How many sectors we have read so far
@@ -106,7 +106,7 @@ void readFile(const FILE_HEADER* header, void** buffer)
 		//If we're at the last sector then only copy the memory required to reach the end of the file
 		size_t mem_size = BYTES_PER_SECTOR;
 		if (next_cluster >= 0xFF0)
-			mem_size = header->file_size - (current_sector_offset * BYTES_PER_SECTOR);
+			mem_size = header->header.file_size - (current_sector_offset * BYTES_PER_SECTOR);
 
 		void* dest_mem = (void*)((uint64_t)fileBuffer + (uint64_t)BYTES_PER_SECTOR * (uint64_t)current_sector_offset);
 

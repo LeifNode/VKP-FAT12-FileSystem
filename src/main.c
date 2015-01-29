@@ -107,11 +107,7 @@ int main(int argc, char *argv[])
 
 	printf("%d\n\n\n", get_fat_entry(2, test));
 
-    unsigned char* fat_sector = allocSector();
 	unsigned char* dir_sector = NULL;
-
-
-    read_sector(1, fat_sector);
     
 	//Print fat entries 2 through 20
 	pfe(2, 20);
@@ -135,8 +131,6 @@ int main(int argc, char *argv[])
 		printFileHeader((FILE_HEADER*)(mm)+i);
 	}
 	free(mm);*/
-
-	free(fat_sector);
 
 	closeFileSystem();
 
