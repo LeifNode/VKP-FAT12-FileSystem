@@ -70,7 +70,7 @@ void printFileHeader(const FILE_HEADER* header)
 	}
 }
 
-void readFile(const FILE_HEADER_REG* header, void** buffer)
+void readFile(const FILE_HEADER* header, void** buffer)
 {
 	if (header->first_logical_cluster == 0)
 	{
