@@ -1,56 +1,33 @@
 CCOMPILER=gcc
-CFLAGS=-I include
-CC= $(CCOMPILER) $(CFLAGS)
-LINK_TARGET=filesystem.exe
-OBJs= \
- sectors.o \
- fat.o \
- pbs.o \
- pfe.o \
- fileio.o \
- main.o
+CFLAGS=-I include -std=c99
+CC= $(CCOMPILER)
+SRC=$(wildcard ./src/*.c)
+OBJ=$(SRC:.c=.o)
 
-REBUILDABLES = $(OBJs) $(LINK_TARGET)
+PBS_EXE="pbs.exe"
+PFS_EXE="pfs.exe"
+
+EXECUTABLES=$(PBS_EXE) $(PFS_EXE)
 
 vpath %.c src
 vpath %.h include
 
-all: $(LINK_TARGET)
+all: $(PBS_EXE)
 
 
-$(LINK_TARGET): $(OBJs)
-	$(CC) -o $@ $^
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-main.o: main.c
-	$(CC) -c $<
+$(PBS_EXE): $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^
 
-pbs.o: pbs.c
-	$(CC) -c $<
-
-pfe.o: pfe.c
-	$(CC) -c $<
-
-sectors.o: sectors.c
-	$(CC) -c $<
-
-fat.o: fat.c
-	$(CC) -c $<
-
-fileio.o: fileio.c
-	$(CC) -c $<
 
 clean:
-	rm $(REBUILDABLES)
+	rm $(OBJ)
+	rm ./*.exe
 	rm *~
 	rm include/*~
 	rm src/*~
-	echo Clean completed
 
 cleanobj:
-	rm $(OBJs)
-
-main.o: common.h pbs.h
-pbs.o: common.h
-pfe.o: common.h pfe.h
-sectors.o: common.h sectors.h
-fileio.o: common.h
+	rm $(OBJ)
