@@ -3,11 +3,13 @@
 
 #ifdef _WIN32
 #include <Windows.h>
+#include <cassert>
 #else
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include <assert.h>
 #endif
 
 #include <stdlib.h>

@@ -78,24 +78,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\cat.h" />
     <ClInclude Include="include\common.h" />
     <ClInclude Include="include\fat.h" />
     <ClInclude Include="include\fileio.h" />
-    <ClInclude Include="include\header.h" />
-    <ClInclude Include="include\ls.h" />
-    <ClInclude Include="include\pbs.h" />
-    <ClInclude Include="include\pfe.h" />
+    <ClInclude Include="include\bootsector.h" />
+    <ClInclude Include="include\mount.h" />
     <ClInclude Include="include\sectors.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\cat.c" />
+    <ClCompile Include="pbs.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="pfe.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\fat.c" />
     <ClCompile Include="src\fileio.c" />
-    <ClCompile Include="src\ls.c" />
     <ClCompile Include="src\main.c" />
-    <ClCompile Include="src\pbs.c" />
-    <ClCompile Include="src\pfe.c" />
+    <ClCompile Include="src\bootsector.c" />
+    <ClCompile Include="src\mount.c" />
     <ClCompile Include="src\sectors.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -18,15 +18,6 @@
     <ClInclude Include="include\fileio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\header.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\pbs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\pfe.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\sectors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -36,10 +27,10 @@
     <ClInclude Include="include\fat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\ls.h">
+    <ClInclude Include="include\bootsector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\cat.h">
+    <ClInclude Include="include\mount.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,22 +41,22 @@
     <ClCompile Include="src\main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\pbs.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\pfe.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\sectors.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\fat.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ls.c">
+    <ClCompile Include="src\bootsector.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\cat.c">
+    <ClCompile Include="src\mount.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pbs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pfe.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

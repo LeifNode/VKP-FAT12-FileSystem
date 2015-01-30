@@ -85,4 +85,8 @@ void printFileHeader(const FILE_HEADER* header);
 ///@bug Should probably have an int/enum return that signifies success/failure and reason for failure
 void readFile(const FILE_HEADER* header, void** buffer);
 
+///@brief Given a regular 8.1 file header, prints out the contents of the file to console.
+///@param [in] file	A pointer to a FILE_HEADER_REG.
+void cat(const FILE_HEADER_REG* file);
+
 #endif
