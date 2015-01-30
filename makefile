@@ -5,25 +5,28 @@ SRC=$(wildcard ./src/*.c)
 OBJ=$(SRC:.c=.o)
 
 PBS_EXE="pbs.exe"
-PFS_EXE="pfs.exe"
+PFE_EXE="pfe.exe"
 
-EXECUTABLES=$(PBS_EXE) $(PFS_EXE)
+EXECUTABLES=$(PBS_EXE) $(PFE_EXE)
 
 vpath %.c src
 vpath %.h include
 
-all: $(PBS_EXE)
+all: $(EXECUTABLES)
 
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(PBS_EXE): $(OBJ)
+$(PBS_EXE): $(OBJ) pbs.o
 	$(CC) $(CFLAGS) -o $@ $^
 
+$(PFE_EXE): $(OBJ) pfe.o
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
 	rm $(OBJ)
+	rm *.o
 	rm ./*.exe
 	rm *~
 	rm include/*~
@@ -31,3 +34,4 @@ clean:
 
 cleanobj:
 	rm $(OBJ)
+	rm *.o
