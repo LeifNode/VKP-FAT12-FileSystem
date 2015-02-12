@@ -6,8 +6,9 @@ OBJ=$(SRC:.c=.o)
 
 PBS_EXE="pbs.exe"
 PFE_EXE="pfe.exe"
+SHELL_EXE="shell.exe"
 
-EXECUTABLES=$(PBS_EXE) $(PFE_EXE)
+EXECUTABLES=$(PBS_EXE) $(PFE_EXE) $(SHELL_EXE)
 
 vpath %.c src
 vpath %.h include
@@ -22,6 +23,9 @@ $(PBS_EXE): $(OBJ) pbs.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(PFE_EXE): $(OBJ) pfe.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(SHELL_EXE): $(OBJ) shell.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 clean:

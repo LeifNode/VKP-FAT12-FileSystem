@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include <string.h>
 #include <stdio.h>
 
 typedef int bool;
