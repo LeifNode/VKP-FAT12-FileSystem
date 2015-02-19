@@ -14,7 +14,7 @@ extern HANDLE hImage;
 extern uint8_t *FILE_SYSTEM;
 
 //Memory maps the file system to FILE_SYSTEM
-void openFileSystem(const char* path);
+bool openFileSystem(const char* path);
 
 //Closes memory map
 void closeFileSystem();

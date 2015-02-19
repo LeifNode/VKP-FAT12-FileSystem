@@ -14,7 +14,7 @@ HANDLE hImage = NULL;
 uint8_t *FILE_SYSTEM = NULL;
 
 
-void openFileSystem(const char* path)
+bool openFileSystem(const char* path)
 {
 	//Open file and create memory map.
 	//===========================
@@ -28,6 +28,13 @@ void openFileSystem(const char* path)
 	fstat(fd_in, &statbuf);
 
 	FILE_SYSTEM = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fd_in, 0);
+	
+	if (FILE_SYSTEM == MAP_FAILED)
+	{
+	    return false;
+	}
+
+	return true;
 
 #else
 
@@ -67,6 +74,7 @@ void openFileSystem(const char* path)
 	assert(FILE_SYSTEM != NULL);
 
 
+	return true;
 #endif
 
 	//===========================
