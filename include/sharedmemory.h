@@ -13,6 +13,5 @@ typedef struct SHELL_SHARED_MEMORY
 #define SHMKEY 7433
 
 SHELL_SHARED_MEMORY* mapShared();
-void unmapShared(SHELL_SHARED_MEMORY* mem);
 
 #endif
