@@ -50,8 +50,10 @@ extern uint16_t BYTES_PER_SECTOR;
 ///
 void readBootSector();
 
+BOOT_SECTOR* getBootSector(uint8_t* fileSystem);
+
 /// \brief Prints the contents of the boot sector to stdout
 ///
-void printBootSector();
+void printBootSector(BOOT_SECTOR* bootSector);
 
 #endif

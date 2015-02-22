@@ -11,7 +11,8 @@ int main(int argc, char* argv[])
 	SHELL_SHARED_MEMORY* shellShared = mapShared();
 	
 	shellShared->current_dir_flc = 0;
-	shellShared->file_system = NULL;
+	memset(&shellShared->boot_sector, 0, sizeof(BOOT_SECTOR));
+	memset(&shellShared->image_path, 0, 256);
 
 	while (1)
 	{
@@ -31,19 +32,21 @@ int main(int argc, char* argv[])
 			}
 			else if (strcmp(command[0], "pbs") == 0)
 			{
-				char* fileName = "./pbs.exe";
+				char* fileName = "./pbs";
 				command[0] = fileName;
-				execProcess("./bin/pbs.exe", command);
+				execProcess("./bin/pbs", command);
 			}
 			else if (strcmp(command[0], "pfe") == 0)
 			{
-				char* fileName = "./pfe.exe";
+				char* fileName = "./pfe";
 				command[0] = fileName;
-				execProcess("./bin/pfe.exe", command);
+				execProcess("./bin/pfe", command);
 			}
 			else if (strcmp(command[0], "mount") == 0)
 			{
-				
+				char* fileName = "./mount";
+				command[0] = fileName;
+				execProcess("./bin/mount", command);
 			}
 			else
 			{

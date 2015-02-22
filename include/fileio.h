@@ -85,6 +85,11 @@ void printFileHeader(const FILE_HEADER* header);
 ///@bug Should probably have an int/enum return that signifies success/failure and reason for failure
 void readFile(const FILE_HEADER* header, void** buffer);
 
+///@brief Finds a file header with a specified name
+///@param [in]	name	The name of the file to search for.
+///@param [in]	header	A pointer to a FILE_HEADER_REG object. This may be NULL to signify a search of the root directory.
+FILE_HEADER* findFile(const char* name, const FILE_HEADER* searchLocation);
+
 ///@brief Given a regular 8.1 file header, prints out the contents of the file to console.
 ///@param [in] file	A pointer to a FILE_HEADER_REG.
 void cat(const FILE_HEADER_REG* file);

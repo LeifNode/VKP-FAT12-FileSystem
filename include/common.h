@@ -24,6 +24,4 @@ typedef int bool;
 
 extern uint16_t BYTES_PER_SECTOR;
 
-#include "sharedmemory.h"
-
 #endif

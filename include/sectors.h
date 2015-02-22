@@ -20,4 +20,9 @@ int write_sector(int sector_number, unsigned char* buffer);
 ///@return	A void pointer pointing to the sector with the given number.
 void* find_sector(uint32_t sector_number);
 
+#define FAT1_OFFSET 1
+#define FAT2_OFFSET 10
+#define ROOT_OFFSET 19
+#define DATA_OFFSET 31
+
 #endif

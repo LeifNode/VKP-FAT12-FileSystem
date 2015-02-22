@@ -99,7 +99,7 @@ void readFile(const FILE_HEADER* header, void** buffer)
 		current_cluster = next_cluster;
 		next_cluster = get_fat_entry(current_cluster, (unsigned char*)fat_sector);
 
-		uint32_t data_sector = current_cluster + 31; //Offset into data area
+		uint32_t data_sector = current_cluster + DATA_OFFSET; //Offset into data area
 
 
 		void* source_mem = find_sector(data_sector);
@@ -114,6 +114,18 @@ void readFile(const FILE_HEADER* header, void** buffer)
 
 		current_sector_offset++;
 	} while (next_cluster < 0xFF0); //While we're not reading the last valid cluster in the file
+}
+
+FILE_HEADER* findFile(const char* name, const FILE_HEADER* searchLocation)
+{
+	if (searchLocation == NULL) //Search root directory
+	{
+		//void* root = 
+	}
+	else //Search specified directory
+	{
+		
+	}
 }
 
 void cat(const FILE_HEADER_REG* file)

@@ -13,11 +13,33 @@ int main(int argc, char *argv[])
 	
 	SHELL_SHARED_MEMORY* sharedMem = mapShared();
 	
-	if (sharedMem->file_system != NULL)
+	if (sharedMem->image_path[0] != '\0')
 	{
 		printf("File system is already mounted. Use umount first to unmount the file system.\n");
 		exit(1);
 	}
 	
+	if (!openFileSystem(argv[1]))
+	{
+		printf("Could not mount image %s\n", argv[1]);
+		exit(1);
+	}
 	
+	int argLen = 0;
+	
+	for (int i = 0; i < 255; i++)
+	{
+		if (argv[1][i] == '\0')
+		{
+			argLen = i + 1;
+			break;
+		}
+	}
+	
+	memcpy(&sharedMem->image_path, argv[1], argLen);
+	sharedMem->image_path[argLen] = '\0';
+	sharedMem->boot_sector = *getBootSector(FILE_SYSTEM);
+	sharedMem->current_dir_flc = 0;
+	
+	return 0;
 }
