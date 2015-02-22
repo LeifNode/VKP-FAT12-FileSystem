@@ -1,5 +1,5 @@
 #include "common.h"
-#include "mount.h"
+#include "imageutils.h"
 #include "bootsector.h"
 #include "fat.h"
 
