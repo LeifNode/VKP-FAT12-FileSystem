@@ -7,6 +7,6 @@
 
 void execProcess(const char* path, char* arguments[]);
 
-char** parseCommand(char* command);
+int parseCommand(char* command, char*** commandArr);
 
 #endif

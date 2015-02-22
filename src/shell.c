@@ -22,10 +22,10 @@ void execProcess(const char* path, char* arguments[])
     }
 }
 
-char** parseCommand(char* command)
+int parseCommand(char* command, char*** commandArr)
 {
 	int capacity = 10;
-    char** commandArr = (char**) malloc(capacity);
+    char** commandArrTmp = (char**) malloc(sizeof(char*) * capacity);
 	
 	int i = 0;
 	
@@ -34,18 +34,23 @@ char** parseCommand(char* command)
 	
 	while (token != NULL)
 	{
-		commandArr[i++] = token;
+		commandArrTmp[i++] = token;
 		
 		if (capacity <= i)
 		{
 			capacity *= 2;
-			commandArr = realloc(commandArr, capacity);
+			commandArrTmp = realloc(commandArrTmp, capacity);
 		}
 		
 		token = strtok(NULL, " ");
 	}
 	
-	commandArr[i] = NULL;
+	commandArrTmp[i] = NULL;
 	
-	return commandArr;
+	if (commandArr)
+		*commandArr = commandArrTmp;
+	else
+		free(commandArrTmp);
+	
+	return i;
 }

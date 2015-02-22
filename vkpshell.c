@@ -12,17 +12,16 @@ int main(int argc, char* argv[])
 	
 	shellShared->current_dir_flc = 0;
 	shellShared->file_system = NULL;
-	
-	printf("%s\n", argv[0]);
 
 	while (1)
 	{
 		printf("shell:");
 	
 		char* line = getLine();
-		char** command = parseCommand(line);
+		char** command;
+		int argcount = parseCommand(line, &command);
 		
-		if (command[0] != NULL)
+		if (argcount > 0)
 		{
 			if (strcmp(command[0], "exit") == 0)
 			{
@@ -32,12 +31,23 @@ int main(int argc, char* argv[])
 			}
 			else if (strcmp(command[0], "pbs") == 0)
 			{
-				char* args[] = {"./pbs.exe", command[1], NULL};
-				execProcess("./bin/pbs.exe", args);
+				char* fileName = "./pbs.exe";
+				command[0] = fileName;
+				execProcess("./bin/pbs.exe", command);
+			}
+			else if (strcmp(command[0], "pfe") == 0)
+			{
+				char* fileName = "./pfe.exe";
+				command[0] = fileName;
+				execProcess("./bin/pfe.exe", command);
 			}
 			else if (strcmp(command[0], "mount") == 0)
 			{
 				
+			}
+			else
+			{
+				printf("%s: command not found.\n", command[0]);
 			}
 		}
 
