@@ -31,7 +31,7 @@ bool openFileSystem(const char* path)
 	
 	if (FILE_SYSTEM == MAP_FAILED)
 	{
-		printf("Unable to open image %s\n", path);
+		printf("Could not open image %s.\n", path);
 	    return false;
 	}
 

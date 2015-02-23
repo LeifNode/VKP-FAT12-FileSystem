@@ -3,6 +3,7 @@
 #include "bootsector.h"
 #include "console.h"
 #include "sharedmemory.h"
+#include "fileio.h"
 
 
 int main(int argc, char* argv[])
@@ -13,6 +14,7 @@ int main(int argc, char* argv[])
 	shellShared->current_dir_flc = 0;
 	memset(&shellShared->boot_sector, 0, sizeof(BOOT_SECTOR));
 	memset(&shellShared->image_path, 0, 256);
+	memset(&shellShared->working_dir_path, 0, 256);
 
 	while (1)
 	{
@@ -47,6 +49,12 @@ int main(int argc, char* argv[])
 				char* fileName = "./mount";
 				command[0] = fileName;
 				execProcess("./bin/mount", command);
+			}
+			else if (strcmp(command[0], "cd") == 0)
+			{
+				char* fileName = "./cd";
+				command[0] = fileName;
+				execProcess("./bin/cd", command);
 			}
 			else
 			{

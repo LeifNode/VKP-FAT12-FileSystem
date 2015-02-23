@@ -39,11 +39,3 @@ char* getLine()
     *(line - 1) = '\0';
     return linep;
 }
-
-void parseCommandArgs(char* str, char* out[])
-{
-    if (str == NULL || out == NULL)
-    {
-		printf("Could not parse command arguments.\n");
-    }
-}

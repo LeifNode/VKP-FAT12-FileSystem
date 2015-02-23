@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 	
 	memcpy(&sharedMem->image_path, argv[1], argLen);
 	sharedMem->image_path[argLen] = '\0';
+	//printf("Mount path: %s\n", sharedMem->image_path);
 	sharedMem->boot_sector = *getBootSector(FILE_SYSTEM);
 	sharedMem->current_dir_flc = 0;
 	

@@ -116,16 +116,92 @@ void readFile(const FILE_HEADER* header, void** buffer)
 	} while (next_cluster < 0xFF0); //While we're not reading the last valid cluster in the file
 }
 
-FILE_HEADER* findFile(const char* name, const FILE_HEADER* searchLocation)
+FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation)
 {
+	if (strlen(name) > 8)
+	{
+		printf("Specified file name \"%s\" is too long", name);
+		return NULL;
+	}
+	
+	char fileName[9];
+	FILE_HEADER_REG* currentHeader = NULL;
+
 	if (searchLocation == NULL) //Search root directory
 	{
-		//void* root = 
+		FILE_HEADER_REG* root = (FILE_HEADER_REG*)find_sector(ROOT_OFFSET);
+		currentHeader = root;
+		
+		for (int i = 0; i < 224; i++)
+		{
+			if (currentHeader->attributes != 0x0f)//Is this a long file name?
+			{
+				memset(fileName, 0, 9);//Clear name
+				//Replace spaces in file name with null characters so we can compare names correctly
+				for (int c = 0; c < 8; c++) 
+				{
+					if (currentHeader->file_name[c] == ' ')
+					{
+						fileName[c] = '\0';
+						break;
+					}
+				
+					fileName[c] = currentHeader->file_name[c];
+				}
+				
+				if (strcmp(name, fileName) == 0)
+				{
+					return currentHeader;
+				}
+			}
+			
+			currentHeader++;
+		}
 	}
 	else //Search specified directory
 	{
+		printf("Finding in subdir\n");
+		unsigned char* fat = (unsigned char*)find_sector(FAT1_OFFSET);
+		uint16_t currentCluster = searchLocation->header.first_logical_cluster;
 		
+		do
+		{
+			FILE_HEADER_REG* dataSector = (FILE_HEADER_REG*)find_sector(DATA_OFFSET + currentCluster);
+			currentHeader = dataSector;
+			
+			for (int i = 0; i < 16; i++)
+			{
+				if (currentHeader->attributes != 0x0f)//Is this a long file name?
+				{
+					memset(fileName, 0, 9);//Clear name
+					
+					//Replace spaces in file name with null characters so we can compare names correctly
+					//This could be moved to a function at some point
+					for (int c = 0; c < 8; c++) 
+					{
+						if (currentHeader->file_name[c] == ' ')
+						{
+							fileName[c] = '\0';
+							break;
+						}
+					
+						fileName[c] = currentHeader->file_name[c];
+					}
+					
+					if (strcmp(name, fileName) == 0)
+					{
+						return currentHeader;
+					}
+				}
+				
+				currentHeader++;
+			}
+			
+			currentCluster = get_fat_entry(currentCluster, fat);
+		} while (currentCluster < 0xFF7);//Loop through all subdirectory sectors in chain
 	}
+	
+	return NULL;
 }
 
 void cat(const FILE_HEADER_REG* file)

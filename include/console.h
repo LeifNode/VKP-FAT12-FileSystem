@@ -5,6 +5,4 @@
 
 char* getLine();
 
-void parseCommandArgs(char* str, char* out[]);
-
 #endif
