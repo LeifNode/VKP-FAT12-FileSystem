@@ -11,9 +11,10 @@ PFE_EXE="pfe"
 MOUNT_EXE="mount"
 CD_EXE="cd"
 CAT_EXE="cat"
+RM_EXE="rm"
 SHELL_EXE="shell"
 
-EXECUTABLES=$(PBS_EXE) $(PFE_EXE) $(MOUNT_EXE) $(CD_EXE) $(CAT_EXE) $(SHELL_EXE)
+EXECUTABLES=$(PBS_EXE) $(PFE_EXE) $(MOUNT_EXE) $(CD_EXE) $(CAT_EXE) $(RM_EXE) $(SHELL_EXE)
 
 vpath %.c src
 vpath %.h include
@@ -37,6 +38,9 @@ $(CD_EXE): $(OBJ) cd.o
 	$(CC) $(CFLAGS) -o $(BINDIR)$@ $^ $(POSTCFLAGS)
 	
 $(CAT_EXE): $(OBJ) cat.o
+	$(CC) $(CFLAGS) -o $(BINDIR)$@ $^ $(POSTCFLAGS)
+	
+$(RM_EXE): $(OBJ) rm.o
 	$(CC) $(CFLAGS) -o $(BINDIR)$@ $^ $(POSTCFLAGS)
 
 $(SHELL_EXE): $(OBJ) vkpshell.o

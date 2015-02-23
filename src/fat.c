@@ -102,6 +102,9 @@ void pfe(int start, int end)
 
 void freeFatChain(int fatStart, bool zeroMemory)
 {
+	if (fatStart == 0)
+		return;
+
 	unsigned char* fat1 = (unsigned char*)find_sector(FAT1_OFFSET);
 	unsigned char* fat2 = (unsigned char*)find_sector(FAT2_OFFSET);
 	

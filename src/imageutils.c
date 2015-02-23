@@ -23,11 +23,11 @@ bool openFileSystem(const char* path)
 
 	struct stat statbuf;
 
-	int fd_in = open(path, O_RDONLY);
+	int fd_in = open(path, O_RDWR);
 
 	fstat(fd_in, &statbuf);
 
-	FILE_SYSTEM = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fd_in, 0);
+	FILE_SYSTEM = mmap(NULL, statbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd_in, 0);
 	
 	if (FILE_SYSTEM == MAP_FAILED)
 	{

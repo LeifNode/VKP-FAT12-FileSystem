@@ -90,6 +90,8 @@ void readFile(const FILE_HEADER* header, void** buffer);
 ///@param [in]	header	A pointer to a FILE_HEADER_REG object. This may be NULL to signify a search of the root directory.
 FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation);
 
+void deleteFile(FILE_HEADER* header);
+
 ///@brief Given a regular 8.1 file header, prints out the contents of the file to console.
 ///@param [in] file	A pointer to a FILE_HEADER_REG.
 void cat(const FILE_HEADER_REG* file);

@@ -30,9 +30,16 @@ int main(int argc, char* argv[])
 		if (selectedFile != NULL && 
 		    (selectedFile->header.attributes & FILE_ATTR_SUBDIRECTORY) == 0 &&
 			selectedFile->header.attributes != 0x0f && 
-			selectedFile->header.first_logical_cluster != 0)//Make sure this file is valid
+			selectedFile->header.first_logical_cluster != 0 &&
+			selectedFile->header.file_size > 0)//Make sure this file is valid
 		{
 			cat(&selectedFile->header);
+			
+			printf("\n");
+		}
+		else
+		{
+			printf("Could not cat file %s.\n", argv[1]);
 		}
 	}
 

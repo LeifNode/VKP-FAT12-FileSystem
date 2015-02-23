@@ -204,13 +204,22 @@ FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation)
 	return NULL;
 }
 
+void deleteFile(FILE_HEADER* header)
+{
+	int flc = header->header.first_logical_cluster;
+	
+	memset(header, 0, sizeof(FILE_HEADER));
+	
+	freeFatChain(flc, true);
+}
+
 void cat(const FILE_HEADER_REG* file)
 {
 	void* buffer = NULL;
 
 	//Could just substitute this for reading sector by sector and printing
 	//Not really needed, but if we were going to be keeping RAM used to a minimum we might want to
-	readFile(file, &buffer);
+	readFile((FILE_HEADER*)file, &buffer);
 
 	for (uint64_t i = 0; i < file->file_size; i++)
 	{
