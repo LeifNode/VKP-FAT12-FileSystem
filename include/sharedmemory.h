@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "bootsector.h"
+#include "fileio.h"
 
 typedef struct SHELL_SHARED_MEMORY
 {
@@ -12,6 +13,10 @@ typedef struct SHELL_SHARED_MEMORY
 	//uint8_t* file_system;
 	char image_path[256];
 	char working_dir_path[256];
+	
+	//Directory stack
+	int stack_top_index;
+	void* directory_stack[64];
 } SHELL_SHARED_MEMORY;
 
 #define SHMKEY 7435
@@ -20,5 +25,9 @@ typedef struct SHELL_SHARED_MEMORY
 void createShared();
 SHELL_SHARED_MEMORY* mapShared();
 void unmapShared();
+
+FILE_HEADER* getDirStackTop(SHELL_SHARED_MEMORY* sharedMemory);
+FILE_HEADER* popDirStack(SHELL_SHARED_MEMORY* sharedMemory);
+void pushDirStack(SHELL_SHARED_MEMORY* sharedMemory, FILE_HEADER* header);
 
 #endif

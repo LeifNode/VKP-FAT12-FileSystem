@@ -12,7 +12,7 @@ MOUNT_EXE="mount"
 CD_EXE="cd"
 SHELL_EXE="shell"
 
-EXECUTABLES=$(PBS_EXE) $(PFE_EXE) $(SHELL_EXE) $(MOUNT_EXE) $(CD_EXE)
+EXECUTABLES=$(PBS_EXE) $(PFE_EXE) $(MOUNT_EXE) $(CD_EXE) $(SHELL_EXE)
 
 vpath %.c src
 vpath %.h include

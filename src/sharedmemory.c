@@ -23,6 +23,8 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
+#include "imageutils.h"
+
 void createShared()
 {
 	int fd;
@@ -50,4 +52,57 @@ SHELL_SHARED_MEMORY* mapShared()
 void unmapShared()
 {
 	shm_unlink(SHMNAME);
+}
+
+FILE_HEADER* getDirStackTop(SHELL_SHARED_MEMORY* sharedMemory)
+{
+	void* offsetPtr = sharedMemory->directory_stack[sharedMemory->stack_top_index];
+	
+	if (offsetPtr != NULL)
+		return (FILE_HEADER*)((uint64_t)offsetPtr + (uint64_t)FILE_SYSTEM);
+	else
+		return NULL;
+}
+
+FILE_HEADER* popDirStack(SHELL_SHARED_MEMORY* sharedMemory)
+{
+	FILE_HEADER* top = getDirStackTop(sharedMemory);
+	
+	sharedMemory->stack_top_index--;
+	if (sharedMemory->stack_top_index < 0)
+	{
+		//printf("Stack pop out of bounds.\n");
+		sharedMemory->stack_top_index = 0;
+		
+		return NULL;
+	}
+	
+	FILE_HEADER* newTop = getDirStackTop(sharedMemory);
+	if (newTop != NULL)
+	{
+		sharedMemory->current_dir_flc = newTop->header.first_logical_cluster;
+		sharedMemory->current_dir_offset = (void*)((uint64_t)newTop - (uint64_t)FILE_SYSTEM);
+	}
+	else
+	{
+		sharedMemory->current_dir_flc = 0;
+		sharedMemory->current_dir_offset = NULL;
+	}
+	
+	return top;
+}
+
+void pushDirStack(SHELL_SHARED_MEMORY* sharedMemory, FILE_HEADER* header)
+{
+	sharedMemory->stack_top_index++;
+	sharedMemory->current_dir_flc = header->header.first_logical_cluster;
+	if (sharedMemory->stack_top_index > 63)
+	{
+		printf("Stack push out of bounds.\n");
+		sharedMemory->stack_top_index = 63;
+		return;
+	}
+	
+	sharedMemory->current_dir_offset = (void*)((uint64_t)header - (uint64_t)FILE_SYSTEM);
+	sharedMemory->directory_stack[sharedMemory->stack_top_index] = sharedMemory->current_dir_offset;
 }

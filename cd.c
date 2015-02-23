@@ -19,11 +19,34 @@ int main(int argc, char* argv[])
 	
 	readBootSector();
 	
-	FILE_HEADER* subdir = (FILE_HEADER*)findFile("SUBDIR", NULL);
-	
-	FILE_HEADER* example = (FILE_HEADER*)findFile("EXAMPLE", subdir);
+	if (strcmp(argv[1], ".") == 0)
+	{}
+	else if (strcmp(argv[1], "..") == 0)
+	{
+		popDirStack(sharedMem);
+		
+		FILE_HEADER* top = getDirStackTop(sharedMem);
+		
+		if (top != NULL)
+		{
+			printFileHeader(top);
+		}
+		else
+		{
+			printf("root\n");
+		}
+	}
+	else
+	{
+		FILE_HEADER* selectedDir = (FILE_HEADER*)findFile(argv[1], getDirStackTop(sharedMem));
 
-	printFileHeader(example);
+		if (selectedDir != NULL && (selectedDir->header.attributes & FILE_ATTR_SUBDIRECTORY) != 0)//Check if this is actually a directory
+		{
+			printFileHeader(selectedDir);
+			
+			pushDirStack(sharedMem, selectedDir);
+		}
+	}
 
 	return 0;
 }

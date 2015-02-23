@@ -56,5 +56,5 @@ int write_sector(int sector_number, unsigned char* buffer)
 
 void* find_sector(uint32_t sector_number)
 {
-	return (void*)((long)FILE_SYSTEM + (long)sector_number * (long)BYTES_PER_SECTOR);
+	return (void*)((uint64_t)FILE_SYSTEM + (uint64_t)sector_number * (uint64_t)BYTES_PER_SECTOR);
 }

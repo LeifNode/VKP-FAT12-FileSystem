@@ -118,6 +118,7 @@ void readFile(const FILE_HEADER* header, void** buffer)
 
 FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation)
 {
+	///TODO: Check extensions 
 	if (strlen(name) > 8)
 	{
 		printf("Specified file name \"%s\" is too long", name);
@@ -160,7 +161,6 @@ FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation)
 	}
 	else //Search specified directory
 	{
-		printf("Finding in subdir\n");
 		unsigned char* fat = (unsigned char*)find_sector(FAT1_OFFSET);
 		uint16_t currentCluster = searchLocation->header.first_logical_cluster;
 		

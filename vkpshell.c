@@ -11,10 +11,15 @@ int main(int argc, char* argv[])
 	createShared();
 	SHELL_SHARED_MEMORY* shellShared = mapShared();
 	
-	shellShared->current_dir_flc = 0;
+	/* shellShared->current_dir_flc = 0;
 	memset(&shellShared->boot_sector, 0, sizeof(BOOT_SECTOR));
 	memset(&shellShared->image_path, 0, 256);
 	memset(&shellShared->working_dir_path, 0, 256);
+	
+	shellShared->stack_top_index = 0;
+	memset(&shellShared->directory_stack, 0, 64 * sizeof(void*)); */
+	
+	memset(shellShared, 0, sizeof(shellShared));
 
 	while (1)
 	{
