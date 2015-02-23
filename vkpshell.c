@@ -61,6 +61,12 @@ int main(int argc, char* argv[])
 				command[0] = fileName;
 				execProcess("./bin/cd", command);
 			}
+			else if (strcmp(command[0], "cat") == 0)
+			{
+				char* fileName = "./cat";
+				command[0] = fileName;
+				execProcess("./bin/cat", command);
+			}
 			else
 			{
 				printf("%s: command not found.\n", command[0]);

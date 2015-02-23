@@ -1,5 +1,6 @@
 #include "fat.h"
 #include "sectors.h"
+#include "bootsector.h"
 
 unsigned int get_fat_entry(int fat_entry_number, unsigned char* fat)
 {
@@ -97,4 +98,28 @@ void pfe(int start, int end)
 	{
 		printf("Fat entry #%d: %X\n", i, get_fat_entry(i, fat_sector));
 	}
+}
+
+void freeFatChain(int fatStart, bool zeroMemory)
+{
+	unsigned char* fat1 = (unsigned char*)find_sector(FAT1_OFFSET);
+	unsigned char* fat2 = (unsigned char*)find_sector(FAT2_OFFSET);
+	
+	unsigned int currentEntry = fatStart;
+	unsigned int nextEntry;
+
+	do
+	{
+		nextEntry = get_fat_entry(currentEntry, fat1);
+		
+		if (zeroMemory && currentEntry != 0)
+		{
+			memset(find_sector(DATA_OFFSET + currentEntry), 0, BYTES_PER_SECTOR);
+		}
+		
+		set_fat_entry(currentEntry, 0, fat1);
+		set_fat_entry(currentEntry, 0, fat2);
+		
+		currentEntry = nextEntry;
+	} while (nextEntry < 0xFF7);
 }

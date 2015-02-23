@@ -15,9 +15,11 @@ int main(int argc, char *argv[])
 	
 	if (sharedMem->image_path[0] != '\0')
 	{
-		printf("File system is already mounted. Use umount first to unmount the file system.\n");
-		exit(1);
+		printf("File system at %s is already mounted.\n", sharedMem->image_path);
+		//exit(1);
 	}
+	
+	memset(sharedMem, 0, sizeof(sharedMem));
 	
 	if (!openFileSystem(argv[1]))
 	{
