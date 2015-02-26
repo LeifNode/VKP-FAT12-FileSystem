@@ -5,6 +5,7 @@
 #include "sharedmemory.h"
 #include "fileio.h"
 
+#include "executables.h"
 
 int main(int argc, char* argv[])
 {	
@@ -20,6 +21,9 @@ int main(int argc, char* argv[])
 	memset(&shellShared->directory_stack, 0, 64 * sizeof(void*)); */
 	
 	memset(shellShared, 0, sizeof(shellShared));
+	
+	//Add bin directory to executable list.
+	addDirToExecutableList("./bin");
 
 	while (1)
 	{
@@ -37,7 +41,7 @@ int main(int argc, char* argv[])
 				free(command);
 				break;
 			}
-			else if (strcmp(command[0], "pbs") == 0)
+			/*else if (strcmp(command[0], "pbs") == 0)
 			{
 				char* fileName = "./pbs";
 				command[0] = fileName;
@@ -72,9 +76,20 @@ int main(int argc, char* argv[])
 				char* fileName = "./rm";
 				command[0] = fileName;
 				execProcess("./bin/rm", command);
-			}
+			}*/
 			else
 			{
+				for(size_t i = 0; i < NUM_EXECUTABLES; ++i)
+				{
+					if(strcmp(command[0], EXECUTABLES[i] + 2) == 0)
+					{
+						char* filename[256] = "./bin/";
+						
+						strcat(filename, EXECUTABLES[i] + 2);
+						
+						execProcess(filename, command);
+					}
+				}
 				printf("%s: command not found.\n", command[0]);
 			}
 		}
@@ -82,6 +97,9 @@ int main(int argc, char* argv[])
 		free(line);
 		free(command);
 	}
+	
+	//Free executables list.
+	freeExecutableList();
 	
 	unmapShared();
 	
