@@ -39,6 +39,7 @@ int main(int argc, char* argv[])
 			{
 				free(line);
 				free(command);
+				freeExecutableList();
 				break;
 			}
 			/*else if (strcmp(command[0], "pbs") == 0)
