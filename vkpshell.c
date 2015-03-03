@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 				{
 					if(strcmp(command[0], EXECUTABLES[i] + 2) == 0)
 					{
-						char* filename[256] = "./bin/";
+						char filename[256] = "./bin/";
 						
 						strcat(filename, EXECUTABLES[i] + 2);
 						
