@@ -2,25 +2,32 @@
 #ifndef _EXECUTABLES_H
 #define _EXECUTABLES_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <stdbool.h>
+#include <string.h>
+
 //A header to deal with an executable file list and a 
 
 //Allocation chunk size for executables list.
 #define EXECUTABLES_ALLOC_CHUNK_SIZE 16
 
-const unsigned char ELF_HEADER[] = { 0x7f, 'E', 'L', 'F' };
+//#define ELF_HEADER_SIZE sizeof(ELF_HEADER_BYTES)/sizeof(ELF_HEADER_BYTES[0])
+#define ELF_HEADER_SIZE 4
+
+extern const unsigned char ELF_HEADER_BYTES[ELF_HEADER_SIZE];
 
 //Windows
 //unsigned char ELF_HEADER[] = { 'M', 'Z' };
 
-char **EXECUTABLES = NULL;
+extern char **EXECUTABLES;
 
 //Stores the number of entry slots allocated in the executable list.
-size_t EXECUTABLES_SIZE = 0;
+extern size_t EXECUTABLES_SIZE;
 
 //Stores the actual number of entries populated in the executable list.
-size_t NUM_EXECUTABLES = 0;
-
-#define ELF_HEADER_SIZE sizeof(ELF_HEADER)/sizeof(ELF_HEADER[0])
+extern size_t NUM_EXECUTABLES;
 
 ///@brief Determines if a file is a valid executable ELF file.
 ///@param [in] fp	A FILE pointer to an open file.

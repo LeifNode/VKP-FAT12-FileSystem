@@ -37,8 +37,8 @@ void createShared()
 
 SHELL_SHARED_MEMORY* mapShared()
 {
-	SHELL_SHARED_MEMORY* sharedMem;
-	int fd;
+	SHELL_SHARED_MEMORY* sharedMem = NULL;
+	int fd = -1;
 	
 	fd = shm_open(SHMNAME, O_RDWR, 0);
 	

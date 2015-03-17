@@ -19,8 +19,10 @@ typedef struct SHELL_SHARED_MEMORY
 	void* directory_stack[64];
 } SHELL_SHARED_MEMORY;
 
-#define SHMKEY 7435
-#define SHMNAME "/vkpshare"
+//#define SHMKEY 7435
+#define SHMKEY 2467
+//#define SHMNAME "/vkpshare"
+#define SHMNAME "/memspacetrans"
 
 void createShared();
 SHELL_SHARED_MEMORY* mapShared();

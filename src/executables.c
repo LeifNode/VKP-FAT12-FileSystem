@@ -1,10 +1,15 @@
 #include "executables.h"
+#include "global_limits.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <stdbool.h>
-#include <string.h>
+const unsigned char ELF_HEADER_BYTES[ELF_HEADER_SIZE] = { 0x7f, 'E', 'L', 'F' };
+
+char **EXECUTABLES = NULL;
+
+//Stores the number of entry slots allocated in the executable list.
+size_t EXECUTABLES_SIZE = 0;
+
+//Stores the actual number of entries populated in the executable list.
+size_t NUM_EXECUTABLES = 0;
 
 ///@brief Determines if a file is a valid executable ELF file.
 ///@param [in] fp	A FILE pointer to an open file.
@@ -12,21 +17,22 @@
 ///@retval false	The file is not executable ELF or the file has not been opened.
 bool isELF(FILE *fp)
 {
+	fprintf(stderr,"Checking file %p...\n", fp);
 	if(!fp)
 		return false;
 
 	//Set cursor to beginning of file.
 	fseek(fp, 0, SEEK_SET);
-
+	
 	//Create a buffer to store the header in and zero it.
 	unsigned char header[ELF_HEADER_SIZE] = {0};
 
 	//Read into the buffer.  If the file is less than 4 bytes, fread will just return the number of bytes read.
-	//We don't care because we'll find out when we do our memcmp with the ELF_HEADER.
-	fread(header, sizeof(ELF_HEADER_SIZE), 1, fp);
-
+	//We don't care because we'll find out when we do our memcmp with the ELF_HEADER_BYTES.
+	fread(header, ELF_HEADER_SIZE, 1, fp);
+	
 	//Check this against the expected ELF_HEADER.
-	return memcmp(header, ELF_HEADER, ELF_HEADER_SIZE) == 0;
+	return memcmp(header, ELF_HEADER_BYTES, ELF_HEADER_SIZE) == 0;
 }
 
 ///@brief Frees the executables list.
@@ -44,6 +50,7 @@ void freeExecutableList()
 ///@param [in] name	A null-terminated character string representing an executable's filename.
 void addExecutable(char *name)
 {
+	fprintf(stderr,"Adding executable: %s\n", name);
 	if(!EXECUTABLES)
 	{
 		EXECUTABLES_SIZE = EXECUTABLES_ALLOC_CHUNK_SIZE;
@@ -88,31 +95,37 @@ void trimExecutables()
 
 ///@brief Adds the executables of a directory to the executable list.
 ///@param [in] dir	A string path to a directory.
-void addDirToExecutableList(char *dir)
+void addDirToExecutableList(char *indir)
 {
     struct dirent *dir;
 
-    DIR *d = opendir(dir);
+    DIR *d = opendir(indir);
 
     if(d)
     {
         while((dir = readdir(d)) != NULL)
         {
-            char path[512];
-            sprintf(path, "%s", dir->d_name);
+            char path[MAX_PATH_SIZE];
+			
+			if(!indir || strcmp(indir,"") == 0)
+				strcpy(path, dir->d_name);
+			else
+				sprintf(path, "%s/%s", indir, dir->d_name);
             //printf("%s\n",path);
-
             //addExecutable(dir->d_name);
 
             FILE *fp = fopen(path, "rb");
 
-			if(isELF(fp))
+			if(fp)
 			{
-				//printf("%s\n",dir->d_name);
-				addExecutable(dir->d_name);
-			}
+				if(isELF(fp))
+				{
+					//printf("%s\n",dir->d_name);
+					addExecutable(path);
+				}
 
-			fclose(fp);
+				fclose(fp);
+			}
         }
 
 		//Slim down the list
@@ -121,5 +134,3 @@ void addDirToExecutableList(char *dir)
 
     //printExecutables();
 }
-
-#endif

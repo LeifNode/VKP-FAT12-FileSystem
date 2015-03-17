@@ -3,6 +3,8 @@
 
 #include "common.h"
 
+#include "timeanddate.h"
+
 #pragma pack(push)
 #pragma pack(1)
 
@@ -15,21 +17,21 @@ typedef struct FILE_HEADER_REG
 	char            file_name[8];
 	char            extension[3];
 
-	uint8_t         attributes : 8;
+	uint8_t         attributes;
 
-	uint16_t        reserved : 16;
+	uint16_t        reserved;
 
-	uint16_t        creation_time : 16;
-	uint16_t        creation_date : 16;
-	uint16_t        last_access_date : 16;
+	FILE_TIME       creation_time;
+	FILE_DATE       creation_date;
+	FILE_DATE       last_access_date;
 
-	uint16_t        ignore : 16;
+	uint16_t        ignore;
 
-	uint16_t        last_write_time : 16;
-	uint16_t        last_write_date : 16;
+	FILE_TIME       last_write_time;
+	FILE_DATE       last_write_date;
 
-	uint16_t        first_logical_cluster : 16;
-	uint32_t        file_size : 32;
+	uint16_t        first_logical_cluster;
+	uint32_t        file_size;
 } FILE_HEADER_REG;
 
 ///@brief A struct to store and manipulate long name file headers.
@@ -70,6 +72,8 @@ typedef enum FILE_ATTRIBUTE
 	FILE_ATTR_ARCHIVE = 1 << 5
 } FILE_ATTRIBUTE;
 
+#define FILE_DELETED_BYTE	0xE5
+
 ///@brief Takes a pointer to a wide character string (at least 13 characters allocated) and populates it with the filename from a longname file header.
 ///@param [in]	header	A pointer to a FILE_HEADER_LONGNAME object.
 ///@param [out]	name	A pointer to a wchar_t string (32-bits per char on Linux, 16-bits per char on Windows)
@@ -90,10 +94,19 @@ void readFile(const FILE_HEADER* header, void** buffer);
 ///@param [in]	header	A pointer to a FILE_HEADER_REG object. This may be NULL to signify a search of the root directory.
 FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation);
 
+///@brief Finds a file header with a specified name from a path given.
+///@param [in]	name	The name of the file to search for.
+///@param [in]	header	A pointer to a FILE_HEADER_REG object to start searching from. This may be NULL to signify a search of the root directory.
+FILE_HEADER_REG* findFileFromPath(const char* name, const FILE_HEADER* searchLocation);
+
 void deleteFile(FILE_HEADER* header);
 
 ///@brief Given a regular 8.1 file header, prints out the contents of the file to console.
 ///@param [in] file	A pointer to a FILE_HEADER_REG.
 void cat(const FILE_HEADER_REG* file);
 
+///@brief Determines whether a given file header is a pointer to root.
+///@param [in] file A pointer to a FILE_HEADER.
+///@return Returns 1 for true and 0 for false.
+int isRoot(const FILE_HEADER* file);
 #endif

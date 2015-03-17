@@ -2,6 +2,8 @@
 #include "fat.h"
 #include "sectors.h"
 
+#include "global_limits.h"
+
 void getNameFromLongNameFileHeader(const FILE_HEADER_LONGNAME *header, wchar_t *name)
 {
 	//This only works if wchar_t is 16 bits long.
@@ -68,6 +70,22 @@ void printFileHeader(const FILE_HEADER* header)
 		printf("First logical cluster   = %d\n", header->header.first_logical_cluster);
 		printf("File size               = %dB\n", header->header.file_size);
 	}
+	
+	struct tm timeptr;
+	
+	timeDateToCTime(&header->header.creation_date, &header->header.creation_time, &timeptr);
+	
+	printf("Creation timestamp: %s\n", asctime(&timeptr));
+	
+	timeDateToCTime(&header->header.last_access_date, NULL, &timeptr);
+	
+	printf("Last access date: %s\n", asctime(&timeptr));
+	
+	timeDateToCTime(&header->header.last_write_date, &header->header.last_write_time, &timeptr);
+	
+	printf("Last write timestamp: %s\n", asctime(&timeptr));
+	
+	putchar('\n');
 }
 
 void readFile(const FILE_HEADER* header, void** buffer)
@@ -133,7 +151,7 @@ FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation)
 		FILE_HEADER_REG* root = (FILE_HEADER_REG*)find_sector(ROOT_OFFSET);
 		currentHeader = root;
 		
-		for (int i = 0; i < 224; i++)
+		for (int i = 0; i < MAX_FILES_IN_ROOT_DIR; i++)
 		{
 			if (currentHeader->attributes != 0x0f)//Is this a long file name?
 			{
@@ -227,4 +245,9 @@ void cat(const FILE_HEADER_REG* file)
 	}
 
 	free(buffer);
+}
+
+int isRoot(const FILE_HEADER* file)
+{
+	return file == (FILE_HEADER*)find_sector(ROOT_OFFSET);
 }

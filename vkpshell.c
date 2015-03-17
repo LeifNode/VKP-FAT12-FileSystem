@@ -1,3 +1,5 @@
+#include "global_limits.h"
+
 #include "common.h"
 #include "shell.h"
 #include "bootsector.h"
@@ -7,10 +9,33 @@
 
 #include "executables.h"
 
+#include "stdbool.h"
+
+#define SHELL_PROMPT "shell: "
+
+void showHelp()
+{
+	printf("Shell commands available:\n----------------------\n\n");
+	printExecutables();
+}
+
 int main(int argc, char* argv[])
 {	
+	//Free any mappings from earlier
+	unmapShared();
+	
+	//Create shared memory map.
 	createShared();
+	
+	//Map it using mmap() to shellShared.
 	SHELL_SHARED_MEMORY* shellShared = mapShared();
+	
+	if(shellShared == NULL)
+	{
+		fprintf(stderr, "Shared memory could not be mapped!\n");
+		
+		exit(EXIT_FAILURE);
+	}
 	
 	/* shellShared->current_dir_flc = 0;
 	memset(&shellShared->boot_sector, 0, sizeof(BOOT_SECTOR));
@@ -23,11 +48,24 @@ int main(int argc, char* argv[])
 	memset(shellShared, 0, sizeof(shellShared));
 	
 	//Add bin directory to executable list.
+	
+	fprintf(stderr, "hello");
 	addDirToExecutableList("./bin");
+	
+	printf("\n\nWelcome to VKP Shell.\n\n");
+	
+	showHelp();
+	
+	putchar('\n');
 
 	while (1)
 	{
-		printf("shell:");
+		if(shellShared->working_dir_path[0] == 0)
+			printf(SHELL_PROMPT);
+		else
+		{
+			printf("%s: ", shellShared->working_dir_path);
+		}
 	
 		char* line = getLine();
 		char** command;
@@ -39,8 +77,11 @@ int main(int argc, char* argv[])
 			{
 				free(line);
 				free(command);
-				freeExecutableList();
 				break;
+			}
+			else if (strcmp(command[0], "help") == 0)
+			{
+				showHelp();
 			}
 			/*else if (strcmp(command[0], "pbs") == 0)
 			{
@@ -80,18 +121,22 @@ int main(int argc, char* argv[])
 			}*/
 			else
 			{
+				bool found = false;
 				for(size_t i = 0; i < NUM_EXECUTABLES; ++i)
 				{
-					if(strcmp(command[0], EXECUTABLES[i] + 2) == 0)
+					char *executable_name = strrchr(EXECUTABLES[i], '/') + 1;
+					
+					//If what the user entered was a valid filename, then execute it.
+					if(strcmp(executable_name, command[0]) == 0)
 					{
-						char filename[256] = "./bin/";
-						
-						strcat(filename, EXECUTABLES[i] + 2);
-						
-						execProcess(filename, command);
+						execProcess(EXECUTABLES[i], command);
+						found = true;
+						break;
 					}
 				}
-				printf("%s: command not found.\n", command[0]);
+				
+				if(!found)
+					printf("%s: command not found.\n", command[0]);
 			}
 		}
 
