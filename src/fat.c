@@ -68,9 +68,9 @@ uint16_t get_free_sector_count()
 	void* fat_sector = find_sector(1);
 
 	int totalUsed = 0;
+	int fatSectorCount = (PBS_BOOT_SEC.total_sector_count - DATA_OFFSET);
 
-	//Number of FAT entries per FAT is 384 in theory
-	for (int i = 2; i < 384; i++)
+	for (int i = 2; i < fatSectorCount; i++)
 	{
 		if (get_fat_entry(i, fat_sector) == 0x000)
 		{
@@ -83,10 +83,8 @@ uint16_t get_free_sector_count()
 
 void pfe(int start, int end)
 {
-	//Ignoring dealing with a maximum now.. since i'm not sure what it is
-	//Each cluster is 512B wide and there are 9 dedicated to each FAT table so the max should be 384 entries per table since each entry is 12B right?
-	//If that's the case why are there 2847 data clusters?
-	if (start < 2)
+	int fatSectorCount = (PBS_BOOT_SEC.total_sector_count - DATA_OFFSET);
+	if (start < 2 || end >= fatSectorCount)
 	{
 		printf("Invalid input for pfe. Start entry must be at least 2.\n");
 		return;
@@ -98,6 +96,23 @@ void pfe(int start, int end)
 	{
 		printf("Fat entry #%d: %X\n", i, get_fat_entry(i, fat_sector));
 	}
+}
+
+//Brute force search for free sectors. You'd obviously never want to do this on older systems.
+unsigned int getNextFreeSector()
+{
+	int fatSectorCount = (PBS_BOOT_SEC.total_sector_count - DATA_OFFSET);
+	unsigned char* fat1 = (unsigned char*)find_sector(FAT1_OFFSET);
+	
+	for (unsigned int i = 2; i < fatSectorCount; i++)
+	{
+		if (get_fat_entry(i, fat1) == 0x000)
+		{
+			return i;
+		}
+	}
+	
+	return 0xFFF; //If we reach the end of the FAT table
 }
 
 void freeFatChain(int fatStart, bool zeroMemory)
@@ -125,4 +140,33 @@ void freeFatChain(int fatStart, bool zeroMemory)
 		
 		currentEntry = nextEntry;
 	} while (nextEntry < 0xFF7);
+}
+
+unsigned int appendSector(int startSector)
+{
+	unsigned char* fat1 = (unsigned char*)find_sector(FAT1_OFFSET);
+	unsigned char* fat2 = (unsigned char*)find_sector(FAT2_OFFSET);
+	
+	unsigned int startValue = get_fat_entry(startSector, fat1);
+	
+	if (startValue != 0xFFF)
+	{
+		printf("Invalid start sector for append operation.\n");
+		return 0xFFF;
+	}
+	
+	unsigned int nextSector = getNextFreeSector();
+	
+	if (nextSector == 0xFFF)
+		return 0xFFF;
+		
+	set_fat_entry(startSector, nextSector, fat1);
+	set_fat_entry(startSector, nextSector, fat2);
+		
+	set_fat_entry(nextSector, 0xFFF, fat1);
+	set_fat_entry(nextSector, 0xFFF, fat2);
+	
+	memset(find_sector(DATA_OFFSET + nextSector), 0, BYTES_PER_SECTOR);
+	
+	return nextSector;
 }

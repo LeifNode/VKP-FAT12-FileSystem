@@ -54,3 +54,64 @@ int parseCommand(char* command, char*** commandArr)
 	
 	return i;
 }
+
+void parsePathFileExtension(char* fullPath, char** pathOut, char** fileNameOut, char** extensionOut)
+{
+	char* currentChar = fullPath;
+	
+	char* fileName = NULL;
+	char* extension = NULL;
+	char* clearChar = NULL;
+	
+	while(*currentChar != '\0')
+	{
+		if (*currentChar == '/' || *currentChar == '\\')
+		{
+			fileName = currentChar + 1;
+			clearChar = currentChar;
+		}
+		
+		currentChar++;
+	}
+	
+	if (clearChar)
+		*clearChar = '\0';
+		
+	if (fileName)
+	{
+		currentChar = fileName;
+	}
+	else
+	{
+		currentChar = fullPath;
+	}
+	
+	clearChar = NULL;
+	
+	while(*currentChar != '\0')
+	{
+		if (*currentChar == '.')
+		{
+			extension = currentChar + 1;
+			clearChar = currentChar;
+		}
+		
+		currentChar++;
+	}
+	
+	if (clearChar)
+		*clearChar = '\0';
+	
+	if (pathOut)
+		*pathOut = fullPath;
+	if (fileNameOut)
+		*fileNameOut = fileName;
+	if (extensionOut)
+		*extensionOut = extension;
+		
+	if (fileName == NULL)
+	{
+		*pathOut = NULL;
+		*fileNameOut = fullPath;
+	}
+}

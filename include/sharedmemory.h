@@ -17,6 +17,8 @@ typedef struct SHELL_SHARED_MEMORY
 	//Directory stack
 	int stack_top_index;
 	void* directory_stack[64];
+	
+	int next_free_fat;
 } SHELL_SHARED_MEMORY;
 
 //#define SHMKEY 7435

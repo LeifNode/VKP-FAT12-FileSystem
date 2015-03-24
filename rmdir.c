@@ -30,22 +30,24 @@ int main(int argc, char* argv[])
 		    (selectedFile->header.attributes & FILE_ATTR_SUBDIRECTORY) != 0 &&
 			selectedFile->header.attributes != 0x0f)//Make sure this file is valid
 		{
-			//TODO: Resize fat chain
 			//TODO: Support absolute file paths
-			unsigned int entry = get_fat_entry(selectedFile->header.first_logical_cluster);
 			
-			if (entry != 0xFFF)
+			if (!isDirectoryEmpty(selectedFile))
 			{
 				printf("Directory still has files.\n");
 			}
 			else
 			{
+				freeFatChain(selectedFile->header.first_logical_cluster, true);
 				
+				memset(selectedFile, 0, sizeof(FILE_HEADER));
+				
+				collapseDirectory(getDirStackTop(sharedMem));
 			}
 		}
 		else
 		{
-			printf("Could not rmdir directory %s.\n", argv[1]);
+			printf("Specified file %s is not a directory.\n", argv[1]);
 		}
 	}
 

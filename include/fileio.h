@@ -103,6 +103,15 @@ void deleteFile(FILE_HEADER* header);
 
 int getDirectoryFreeEntryCount(FILE_HEADER* directory);
 
+//Collapes all files in a directory toward the front then drops any extra sectors.
+void collapseDirectory(FILE_HEADER* directory);
+
+//Will expand directory if required
+FILE_HEADER_REG* getNextFreeDirectoryEntry(FILE_HEADER* directory);
+
+//Checks if a directory is empty aside from the . and .. entries along with the long files headers
+bool isDirectoryEmpty(FILE_HEADER* directory);
+
 ///@brief Given a regular 8.1 file header, prints out the contents of the file to console.
 ///@param [in] file	A pointer to a FILE_HEADER_REG.
 void cat(const FILE_HEADER_REG* file);

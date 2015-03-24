@@ -9,4 +9,6 @@ void execProcess(const char* path, char* arguments[]);
 
 int parseCommand(char* command, char*** commandArr);
 
+void parsePathFileExtension(char* fullPath, char** pathOut, char** fileNameOut, char** extensionOut);
+
 #endif

@@ -15,9 +15,11 @@ RM_EXE="rm"
 LS_EXE="ls"
 DF_EXE="df"
 PWD_EXE="pwd"
+RMDIR_EXE="rmdir"
+TOUCH_EXE="touch"
 SHELL_EXE="shell"
 
-EXECUTABLES=$(PBS_EXE) $(PFE_EXE) $(MOUNT_EXE) $(CD_EXE) $(CAT_EXE) $(RM_EXE) $(LS_EXE) $(DF_EXE) $(PWD_EXE) $(SHELL_EXE)
+EXECUTABLES=$(PBS_EXE) $(PFE_EXE) $(MOUNT_EXE) $(CD_EXE) $(CAT_EXE) $(RM_EXE) $(LS_EXE) $(DF_EXE) $(PWD_EXE) $(RMDIR_EXE) $(TOUCH_EXE) $(SHELL_EXE)
 
 vpath %.c src
 vpath %.h include
@@ -53,6 +55,12 @@ $(DF_EXE): $(OBJ) df.o
 	$(CC) $(CFLAGS) -o $(BINDIR)$@ $^ $(POSTCFLAGS)
 
 $(PWD_EXE): $(OBJ) pwd.o
+	$(CC) $(CFLAGS) -o $(BINDIR)$@ $^ $(POSTCFLAGS)
+
+$(RMDIR_EXE): $(OBJ) rmdir.o
+	$(CC) $(CFLAGS) -o $(BINDIR)$@ $^ $(POSTCFLAGS)
+	
+$(TOUCH_EXE): $(OBJ) touch.o
 	$(CC) $(CFLAGS) -o $(BINDIR)$@ $^ $(POSTCFLAGS)
 
 $(SHELL_EXE): $(OBJ) vkpshell.o

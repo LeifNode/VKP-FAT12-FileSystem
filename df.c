@@ -20,8 +20,9 @@ int main(int argc, char* argv[])
 	void* fat_sector = find_sector(FAT1_OFFSET);
 	
 	int fatSectorCount = (boot_sector->total_sector_count - DATA_OFFSET - 2);
-
-	for (int i = 2; i < fatSectorCount; i++)
+	//int maxSector = (boot_sector->bytes_per_sector * boot_sector->sectors_per_fat * 8) / 12;
+	
+	for (int i = 2; i < fatSectorCount + 2; i++)
 	{
 		if (get_fat_entry(i, fat_sector) == 0)
 		{

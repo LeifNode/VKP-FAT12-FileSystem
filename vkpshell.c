@@ -41,7 +41,6 @@ int main(int argc, char* argv[])
 	
 	//Add bin directory to executable list.
 	
-	fprintf(stderr, "hello");
 	addDirToExecutableList("./bin");
 	
 	printf("\n\nWelcome to VKP Shell.\n\n");

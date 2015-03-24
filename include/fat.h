@@ -15,6 +15,10 @@ uint16_t get_free_sector_count();
 ///@brief param [in]	end		The number of the last FAT entry to read from (must be at least 2 since first 2 are unused).
 void pfe(int start, int end);
 
-void freeFatChain(int fatStart, bool freeMemory);
+void freeFatChain(int fatStart, bool zeroMemory);
+
+unsigned int getNextFreeSector();
+
+unsigned int appendSector(int startSector);
 
 #endif

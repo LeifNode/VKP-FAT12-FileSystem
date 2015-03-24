@@ -233,14 +233,228 @@ void deleteFile(FILE_HEADER* header)
 
 int getDirectoryFreeEntryCount(FILE_HEADER* directory)
 {
-	if (directory->header.attributes & FILE_ATTR_SUBDIRECTORY != 0)
-	{
-		
-	}
-	else
+	if (directory == NULL ||
+		directory->header.attributes & FILE_ATTR_SUBDIRECTORY == 0 ||
+		directory->header.attributes == 0x0f)
 	{
 		return -1;
 	}
+	
+	int maxDirectoryEntries = 0;
+	int freeEntryCount = 0;
+	
+	int currentSector = directory->header.first_logical_cluster;
+	unsigned char* fat = (unsigned char*)find_sector(FAT1_OFFSET);
+	
+	do
+	{
+		maxDirectoryEntries += 16;
+		
+		FILE_HEADER_REG* currentDirEntry = (FILE_HEADER_REG*)find_sector(DATA_OFFSET + currentSector);
+		
+		for (int i = 0; i < 16; i++)
+		{
+			if (currentDirEntry[i].attributes == 0 && currentDirEntry[i].first_logical_cluster == 0)
+			{
+				freeEntryCount++;
+			}
+		}
+		
+		currentSector = get_fat_entry(currentSector, fat);
+	} while(currentSector < 0xFF7);
+	
+	return freeEntryCount;
+}
+
+void collapseDirectory(FILE_HEADER* directory)
+{
+	int currentSector = directory->header.first_logical_cluster;
+	
+	int currentFileIndex = 0;
+	int currentSectorIndex = 0;
+	
+	int freeFileIndex = -1;
+	FILE_HEADER_REG* freeEntry = NULL;
+	
+	unsigned char* fat1 = (unsigned char*)find_sector(FAT1_OFFSET);
+	unsigned char* fat2 = (unsigned char*)find_sector(FAT2_OFFSET);
+
+	//Shift all entries down into free spaces
+	do
+	{
+		FILE_HEADER_REG* currentDirEntry = (FILE_HEADER_REG*)find_sector(DATA_OFFSET + currentSector);
+		
+		for (int i = 0; i < 16; i++)
+		{
+			//Find next free sector
+			if (freeFileIndex <= currentFileIndex && 
+			    (currentDirEntry[i].attributes != 0 || currentDirEntry[i].first_logical_cluster != 0))//Save needless work on re-finding the same entry
+			{
+				//This should probably be factored out into its own function at some point
+				//Loops through the directory and finds the first free directory entry
+				
+				unsigned int currentFreeSector = currentSector; //We can assume that every sector before the current one is already filled
+				freeFileIndex = currentSectorIndex * 16;
+				
+				do
+				{
+					FILE_HEADER_REG* freeDirEntry = (FILE_HEADER_REG*)find_sector(DATA_OFFSET + currentFreeSector);
+					
+					if (freeEntry != NULL)
+						break;
+					
+					for (int freei = 0; freei < 16; freei++)
+					{
+						if (freeDirEntry[freei].attributes == 0 && freeDirEntry[freei].first_logical_cluster == 0)//If the entry is used
+						{
+							freeEntry = &freeDirEntry[freei];
+							
+							//Make sure it's completely clear
+							memset(&freeDirEntry[freei], 0, sizeof(FILE_HEADER));
+							
+							break;
+						}
+						
+						freeFileIndex++;
+					}
+					
+					currentFreeSector = get_fat_entry(currentFreeSector, fat1);
+				} while(currentFreeSector < 0xFF7);
+			}
+			
+			if ((currentDirEntry[i].attributes != 0 || currentDirEntry[i].first_logical_cluster != 0) &&
+			    freeFileIndex > 0 && freeFileIndex < currentFileIndex && freeEntry != NULL)
+			{
+				memcpy(freeEntry, &currentDirEntry[i], sizeof(FILE_HEADER));
+				memset(&currentDirEntry[i], 0, sizeof(FILE_HEADER));
+				
+				freeEntry = NULL;
+				freeFileIndex = -1;
+			}
+			
+			currentFileIndex++;
+		}
+		
+		currentSector = get_fat_entry(currentSector, fat1);
+		currentSectorIndex++;
+	} while(currentSector < 0xFF7);
+	
+	//Delete unused sectors of the directory
+	
+	unsigned int lastUsedSector = 0;
+	
+	currentSector = directory->header.first_logical_cluster;
+	currentSector = get_fat_entry(currentSector, fat1); //We want to always keep the first sector of the directory so we skip it
+	
+	while(currentSector < 0xFF7) //Find last used sector
+	{
+		FILE_HEADER_REG* currentDirEntry = (FILE_HEADER_REG*)find_sector(DATA_OFFSET + currentSector);
+		
+		for (int i = 0; i < 16; i++)
+		{
+			if (currentDirEntry[i].attributes != 0 || currentDirEntry[i].first_logical_cluster != 0)
+			{
+				lastUsedSector = currentSector;
+			}
+		}
+		
+		currentSector = get_fat_entry(currentSector, fat1);
+	}
+	
+	if (lastUsedSector != 0xFFF)//Free all sectors following the last used one
+	{
+		freeFatChain(get_fat_entry(lastUsedSector, fat1), true);
+		
+		set_fat_entry(lastUsedSector, 0xFFF, fat1);
+		set_fat_entry(lastUsedSector, 0xFFF, fat2);
+	}
+}
+
+FILE_HEADER_REG* getNextFreeDirectoryEntry(FILE_HEADER* directory)
+{
+	if (directory == NULL) //Root
+	{
+		FILE_HEADER_REG* currentDirEntry = (FILE_HEADER_REG*)find_sector(ROOT_OFFSET);
+		
+		for (int i = 0; i < 224; i++)
+		{
+			if (currentDirEntry[i].attributes == 0 && currentDirEntry[i].first_logical_cluster == 0)
+			{
+				return &currentDirEntry[i];
+			}
+		}
+		
+		return NULL;
+	}
+	else //Subdirectory
+	{
+		if (directory->header.attributes & FILE_ATTR_SUBDIRECTORY == 0 ||
+			directory->header.attributes == 0x0f)
+		{
+			return NULL;
+		}
+		
+		int currentSector = directory->header.first_logical_cluster;
+		int lastSector = currentSector;
+		unsigned char* fat = (unsigned char*)find_sector(FAT1_OFFSET);
+		
+		do
+		{
+			FILE_HEADER_REG* currentDirEntry = (FILE_HEADER_REG*)find_sector(DATA_OFFSET + currentSector);
+			
+			for (int i = 0; i < 16; i++)
+			{
+				if (currentDirEntry[i].attributes == 0 && currentDirEntry[i].first_logical_cluster == 0)
+				{
+					return &currentDirEntry[i];
+				}
+			}
+			
+			lastSector = currentSector;
+			currentSector = get_fat_entry(currentSector, fat);
+		} while(currentSector < 0xFF7);
+		
+		unsigned int newSector = appendSector(lastSector);
+		
+		if (newSector == 0xFFF)
+			return NULL;
+			
+		return (FILE_HEADER_REG*)find_sector(DATA_OFFSET + newSector);
+	}
+}
+
+bool isDirectoryEmpty(FILE_HEADER* directory)
+{
+	if (directory == NULL ||
+		directory->header.attributes & FILE_ATTR_SUBDIRECTORY == 0 ||
+		directory->header.attributes == 0x0f)
+	{
+		return false;
+	}
+	
+	int currentSector = directory->header.first_logical_cluster;
+	unsigned char* fat = (unsigned char*)find_sector(FAT1_OFFSET);
+	
+	do
+	{
+		FILE_HEADER_REG* currentDirEntry = (FILE_HEADER_REG*)find_sector(DATA_OFFSET + currentSector);
+		
+		for (int i = 0; i < 16; i++)
+		{
+			if (currentDirEntry[i].first_logical_cluster != 0)
+			{
+				if (memcmp(currentDirEntry[i].file_name, ".   ", 4) != 0 &&
+					memcmp(currentDirEntry[i].file_name, "..  ", 4) != 0)
+				{
+					return false;
+				}
+			}
+		}
+		
+		currentSector = get_fat_entry(currentSector, fat);
+	} while(currentSector < 0xFF7);
+	
+	return true;
 }
 
 void cat(const FILE_HEADER_REG* file)

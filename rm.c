@@ -30,9 +30,9 @@ int main(int argc, char* argv[])
 		    (selectedFile->header.attributes & FILE_ATTR_SUBDIRECTORY) == 0 &&
 			selectedFile->header.attributes != 0x0f)//Make sure this file is valid
 		{
-			//TODO: Resize fat chain
 			//TODO: Support absolute file paths
 			deleteFile(selectedFile);
+			collapseDirectory(getDirStackTop(sharedMem));
 		}
 		else
 		{

@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 	
 	if(!path)
 	{
-		printf("getting sharedmem %p\n", getDirStackTop(sharedMem));
+		//printf("getting sharedmem %p\n", getDirStackTop(sharedMem));
 		thisDir = getDirStackTop(sharedMem);
 	}
 	else
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 		}	
 	}
 	
-	printf("This dir is: %p\n", thisDir);
+	//printf("This dir is: %p\n", thisDir);
 	
 	if((thisDir->header.attributes & FILE_ATTR_SUBDIRECTORY) != 0)
 	{	
@@ -75,11 +75,11 @@ int main(int argc, char* argv[])
 			{
 				if (currentHeader->attributes != 0x0f)//Is this a long file name?
 				{
-					if((currentHeader->attributes & FILE_ATTR_HIDDEN) != 0 && *(unsigned char*)(currentHeader) != FILE_DELETED_BYTE)
-					{
+					//if((currentHeader->attributes & FILE_ATTR_HIDDEN) != 0 && *(unsigned char*)(currentHeader) != FILE_DELETED_BYTE)
+					//{
 						//Add file to the list.
 						fileList[fileIndex++] = currentHeader;
-					}
+					//}
 				}
 			}
 		}
@@ -95,12 +95,14 @@ int main(int argc, char* argv[])
 				
 				for (int i = 0; i < 16; i++)
 				{
-					if (currentHeader->attributes != 0x0f)//Is this a long file name?
+					if (currentHeader->attributes != 0x0f && currentHeader->first_logical_cluster != 0)//Is this a long file name?
 					{
 						//if((currentHeader->attributes & FILE_ATTR_HIDDEN) != 0 && *(unsigned char*)(currentHeader) != FILE_DELETED_BYTE)
 						//{
 							//Add file to the list.
 							fileList[fileIndex++] = currentHeader;
+							
+							printFileHeader(currentHeader);
 						//}
 					}
 					
@@ -120,19 +122,19 @@ int main(int argc, char* argv[])
 	printf("%u files found\n", fileIndex);
 	
 	//Sort by name.
-	qsort(fileList, fileIndex, sizeof(FILE_HEADER), compareFileHeaderByName);
+	//qsort(fileList, fileIndex, sizeof(FILE_HEADER), compareFileHeaderByName);
 	
 	//Now we can display.
 	
-	//char fileName[9];
+	char fileName[9];
 	
-	//memset(fileName, 0, 9);
+	memset(fileName, 0, 9);
 	
 	for(size_t i = 0; i < fileIndex; ++i)
 	{
-		for(size_t j = 0; j < 8; j++)
-			putchar(fileList[i]->file_name[j]);
-		//memcpy(fileName, &fileList[i]->file_name, 8);
+		//for(size_t j = 0; j < 8; j++)
+			//putchar(fileList[i]->file_name[j]);
+		memcpy(fileName, &fileList[i]->file_name, 8);
 		//printf("%s\n", fileName);
 	}
 	
