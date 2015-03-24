@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-			printf("root\n");
+			//printf("root\n");
 		}
 	}
 	else

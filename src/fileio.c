@@ -231,6 +231,18 @@ void deleteFile(FILE_HEADER* header)
 	freeFatChain(flc, true);
 }
 
+int getDirectoryFreeEntryCount(FILE_HEADER* directory)
+{
+	if (directory->header.attributes & FILE_ATTR_SUBDIRECTORY != 0)
+	{
+		
+	}
+	else
+	{
+		return -1;
+	}
+}
+
 void cat(const FILE_HEADER_REG* file)
 {
 	void* buffer = NULL;

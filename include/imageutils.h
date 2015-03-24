@@ -1,5 +1,8 @@
 #include "common.h"
 
+#ifndef IMAGE_UTILS_H
+#define IMAGE_UTILS_H
+
 #ifdef _WIN32
 
 //Handle for memory map object.
@@ -18,3 +21,5 @@ bool openFileSystem(const char* path);
 
 //Closes memory map
 void closeFileSystem();
+
+#endif

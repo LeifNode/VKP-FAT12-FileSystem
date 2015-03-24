@@ -6,12 +6,12 @@
 #include "console.h"
 #include "sharedmemory.h"
 #include "fileio.h"
-
+#include "imageutils.h"
 #include "executables.h"
 
 #include "stdbool.h"
 
-#define SHELL_PROMPT "shell: "
+#define SHELL_PROMPT "shell~"
 
 void showHelp()
 {
@@ -37,14 +37,6 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 	
-	/* shellShared->current_dir_flc = 0;
-	memset(&shellShared->boot_sector, 0, sizeof(BOOT_SECTOR));
-	memset(&shellShared->image_path, 0, 256);
-	memset(&shellShared->working_dir_path, 0, 256);
-	
-	shellShared->stack_top_index = 0;
-	memset(&shellShared->directory_stack, 0, 64 * sizeof(void*)); */
-	
 	memset(shellShared, 0, sizeof(shellShared));
 	
 	//Add bin directory to executable list.
@@ -60,12 +52,11 @@ int main(int argc, char* argv[])
 
 	while (1)
 	{
-		if(shellShared->working_dir_path[0] == 0)
-			printf(SHELL_PROMPT);
-		else
-		{
-			printf("%s: ", shellShared->working_dir_path);
-		}
+		openFileSystem(shellShared->image_path);
+	
+		printf(SHELL_PROMPT);
+		printWorkingDirectory(shellShared);
+		printf(": ");
 	
 		char* line = getLine();
 		char** command;

@@ -64,6 +64,16 @@ FILE_HEADER* getDirStackTop(SHELL_SHARED_MEMORY* sharedMemory)
 		return NULL;
 }
 
+FILE_HEADER* getDirStackIndex(SHELL_SHARED_MEMORY* sharedMemory, int index)
+{
+	void* offsetPtr = sharedMemory->directory_stack[index];
+	
+	if (index <= sharedMemory->stack_top_index && offsetPtr != NULL)
+		return (FILE_HEADER*)((uint64_t)offsetPtr + (uint64_t)FILE_SYSTEM);
+	else
+		return NULL;
+}
+
 FILE_HEADER* popDirStack(SHELL_SHARED_MEMORY* sharedMemory)
 {
 	FILE_HEADER* top = getDirStackTop(sharedMemory);
@@ -105,4 +115,25 @@ void pushDirStack(SHELL_SHARED_MEMORY* sharedMemory, FILE_HEADER* header)
 	
 	sharedMemory->current_dir_offset = (void*)((uint64_t)header - (uint64_t)FILE_SYSTEM);
 	sharedMemory->directory_stack[sharedMemory->stack_top_index] = sharedMemory->current_dir_offset;
+}
+
+void printWorkingDirectory(SHELL_SHARED_MEMORY* sharedMemory)
+{
+	if (sharedMemory->stack_top_index == 0 || getDirStackTop(sharedMemory) == NULL)
+		printf("/");
+	else
+	{
+		FILE_HEADER* header = getDirStackTop(sharedMemory);
+		for (int i = 0; i < 8; i++)
+		{
+			if (header->header.file_name[i] != ' ')
+				printf("%c", header->header.file_name[i]);
+			else 
+				break;
+		}
+	}
+}
+void printWorkingDirectoryPath(SHELL_SHARED_MEMORY* sharedMemory)
+{
+	
 }

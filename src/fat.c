@@ -92,7 +92,7 @@ void pfe(int start, int end)
 		return;
 	}
 
-	void* fat_sector = find_sector(1);
+	void* fat_sector = find_sector(FAT1_OFFSET);
 
 	for (int i = start; i <= end; i++)
 	{

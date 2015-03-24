@@ -29,7 +29,11 @@ SHELL_SHARED_MEMORY* mapShared();
 void unmapShared();
 
 FILE_HEADER* getDirStackTop(SHELL_SHARED_MEMORY* sharedMemory);
+FILE_HEADER* getDirStackIndex(SHELL_SHARED_MEMORY* sharedMemory, int index);
 FILE_HEADER* popDirStack(SHELL_SHARED_MEMORY* sharedMemory);
 void pushDirStack(SHELL_SHARED_MEMORY* sharedMemory, FILE_HEADER* header);
+
+void printWorkingDirectory(SHELL_SHARED_MEMORY* sharedMemory);
+void printWorkingDirectoryPath(SHELL_SHARED_MEMORY* sharedMemory);
 
 #endif
