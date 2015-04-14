@@ -1,4 +1,6 @@
 #include "sharedmemory.h"
+
+#include "global_limits.h"
 // #include <sys/types.h>
 // #include <sys/ipc.h>
 // #include <sys/shm.h>
@@ -25,6 +27,8 @@
 
 #include "imageutils.h"
 
+SHELL_SHARED_MEMORY *sharedMemoryPtr = NULL;
+
 void createShared()
 {
 	int fd;
@@ -46,12 +50,22 @@ SHELL_SHARED_MEMORY* mapShared()
 	
 	close(fd);
 	
+	//Set global sharedMemPtr.
+	sharedMemoryPtr = sharedMem;
+	
 	return sharedMem;
+}
+
+SHELL_SHARED_MEMORY* getSharedMemoryPtr()
+{
+	return sharedMemoryPtr;
 }
 
 void unmapShared()
 {
 	shm_unlink(SHMNAME);
+	
+	sharedMemoryPtr = NULL;
 }
 
 FILE_HEADER* getDirStackTop(SHELL_SHARED_MEMORY* sharedMemory)
@@ -136,4 +150,49 @@ void printWorkingDirectory(SHELL_SHARED_MEMORY* sharedMemory)
 void printWorkingDirectoryPath(SHELL_SHARED_MEMORY* sharedMemory)
 {
 	
+}
+
+const char* getWorkingPathFromStack(SHELL_SHARED_MEMORY* sharedMemory)
+{
+	static char pathString[MAX_PATH_SIZE];
+	
+	pathString[0] = NULL;
+	
+	int currentIndex = 1;
+	
+	int strPos = 0;
+	
+	do 
+	{
+		snprintf(pathString + strPos, MAX_PATH_SIZE - strPos, "/");
+		
+		strPos++;
+		
+		FILE_HEADER* file = getDirStackIndex(sharedMemory, currentIndex);
+		
+		if (file != NULL)
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				if (file->header.file_name[i] != ' ')
+				{	
+					snprintf(pathString + strPos, MAX_PATH_SIZE - strPos, "%c", file->header.file_name[i]);
+					
+					strPos++;
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+		
+		snprintf(pathString + strPos, MAX_PATH_SIZE - strPos, "/");
+					
+		strPos++;
+		
+		currentIndex++;
+	} while (currentIndex <= sharedMemory->stack_top_index);
+	
+	return pathString;
 }

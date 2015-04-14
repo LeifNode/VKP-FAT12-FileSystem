@@ -5,6 +5,7 @@
 #include "bootsector.h"
 #include "fileio.h"
 
+///@brief A structure to facilitate shared data between shell and applications.
 typedef struct SHELL_SHARED_MEMORY
 {
 	BOOT_SECTOR boot_sector;
@@ -24,11 +25,24 @@ typedef struct SHELL_SHARED_MEMORY
 //#define SHMKEY 7435
 #define SHMKEY 2467
 //#define SHMNAME "/vkpshare"
-#define SHMNAME "/memspacetrans"
+#define SHMNAME "/vkpmemspace"
 
+
+///@brief	Allocates an internal shared memory file buffer.
+///@return	N/A (call mapShared() after this to get a memory-mapped pointer to what this allocates)
 void createShared();
+
+///@brief	Gets a memory-mapped pointer to shared memory allocated by a call to createShared().
+///@return	Returns a pointer to a SHELL_SHARED_MEMORY struct.
 SHELL_SHARED_MEMORY* mapShared();
+
+///@brief	Gets the pointer to shared memory last set up by a call to mapShared().
+///@return	Returns a pointer to a SHELL_SHARED_MEMORY struct.
+SHELL_SHARED_MEMORY* getSharedMemoryPtr();
+
+///@brief	Called to unmap the pointer to shared memory
 void unmapShared();
+
 
 FILE_HEADER* getDirStackTop(SHELL_SHARED_MEMORY* sharedMemory);
 FILE_HEADER* getDirStackIndex(SHELL_SHARED_MEMORY* sharedMemory, int index);
@@ -37,5 +51,7 @@ void pushDirStack(SHELL_SHARED_MEMORY* sharedMemory, FILE_HEADER* header);
 
 void printWorkingDirectory(SHELL_SHARED_MEMORY* sharedMemory);
 void printWorkingDirectoryPath(SHELL_SHARED_MEMORY* sharedMemory);
+
+const char* getWorkingPathFromStack(SHELL_SHARED_MEMORY* sharedMemory);
 
 #endif

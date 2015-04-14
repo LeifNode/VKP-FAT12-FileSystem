@@ -5,6 +5,9 @@
 
 #include "timeanddate.h"
 
+//Need ROOT_OFFSET
+#include "sectors.h"
+
 #pragma pack(push)
 #pragma pack(1)
 
@@ -89,15 +92,35 @@ void printFileHeader(const FILE_HEADER* header);
 ///@bug Should probably have an int/enum return that signifies success/failure and reason for failure
 void readFile(const FILE_HEADER* header, void** buffer);
 
-///@brief Finds a file header with a specified name
-///@param [in]	name	The name of the file to search for.
-///@param [in]	header	A pointer to a FILE_HEADER_REG object. This may be NULL to signify a search of the root directory.
-FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation);
+///@brief Finds a file header with a specified name (and/or path)
+///@param [in]	name			The name of the file to search for.
+///@param [in]	searchLocation	A pointer to a FILE_HEADER object to start searching from. This may be NULL to signify a search of the root directory.
+///@param [out]	found			A pointer to the file header, if found.  This is NULL if root or if not found.
+///@retval	true	A file header with the information given was found. (If found==NULL and this is true, the file is root.)
+///@retval	false	The target file header could not be found.
+bool findFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_REG** found);
 
-///@brief Finds a file header with a specified name from a path given.
-///@param [in]	name	The name of the file to search for.
-///@param [in]	header	A pointer to a FILE_HEADER_REG object to start searching from. This may be NULL to signify a search of the root directory.
-FILE_HEADER_REG* findFileFromPath(const char* name, const FILE_HEADER* searchLocation);
+///@brief Finds a file header with a specified name
+///@param [in]	name			The name of the file to search for.
+///@param [in]	searchLocation	A pointer to a FILE_HEADER object to start searching from. This may be NULL to signify a search of the root directory.
+///@param [out]	found			A pointer to the file header, if found.  This is NULL if root or if not found.
+///@retval	true	A file header with the information given was found. (If found==NULL and this is true, the file is root.)
+///@retval	false	The target file header could not be found.
+bool findFileInDir(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_REG** found);
+
+///@brief Moves within the directory stack to a file header with a specified name (and/or path)
+///@param [in]	name			The name of the file to search for.
+///@param [in]	searchLocation	A pointer to a FILE_HEADER object to start searching from. This may be NULL to signify a search of the root directory.
+///@param [out]	found			A pointer to the file header, if found.  This is NULL if root or if not found.
+///@retval	true	A file header with the information given was found and moved to. (If found==NULL and this is true, the file is root.)
+///@retval	false	The target file header could not be found.
+bool gotoFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_REG** found);
+
+void deleteFile(FILE_HEADER* header);
+
+///@brief Given a regular 8.1 file header, prints out the contents of the file to console.
+///@param [in] file	A pointer to a FILE_HEADER_REG.
+void cat(const FILE_HEADER_REG* file);
 
 void deleteFile(FILE_HEADER* header);
 
@@ -119,5 +142,6 @@ void cat(const FILE_HEADER_REG* file);
 ///@brief Determines whether a given file header is a pointer to root.
 ///@param [in] file A pointer to a FILE_HEADER.
 ///@return Returns 1 for true and 0 for false.
-int isRoot(const FILE_HEADER* file);
+bool isRoot(void* file);
+
 #endif

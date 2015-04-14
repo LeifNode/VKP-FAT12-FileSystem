@@ -36,7 +36,11 @@ int main(int argc, char* argv[])
 	
 	parsePathFileExtension(argv[1], &path, &fileName, &extension);
 	
-	FILE_HEADER* selectedFile = (FILE_HEADER*)findFile(argv[1], getDirStackTop(sharedMem));
+	/*FILE_HEADER* selectedFile = (FILE_HEADER*)*/
+	
+	FILE_HEADER *selectedFile = NULL;
+	
+	findFile(argv[1], getDirStackTop(sharedMem), &selectedFile);
 
 	if (selectedFile != NULL)
 	{

@@ -19,7 +19,29 @@ int main(int argc, char* argv[])
 	
 	readBootSector();
 	
-	if (strcmp(argv[1], ".") == 0)
+	char *name = argv[1];
+	
+	FILE_HEADER_REG *found = NULL;
+	
+	if(!gotoFile(name, getDirStackTop(sharedMem), &found))
+	{
+		fprintf(stderr, "Could not find file/folder: %s !", name);
+	}
+	else
+	{
+		if(found == NULL)
+		{
+			printf("In root!\n");
+		}
+		/*else
+		{
+			printf("Moved to %s (%p) (root: %p)\n", name, (void*)found - (void*)FILE_SYSTEM, (void*)find_sector(ROOT_OFFSET) - (void*)FILE_SYSTEM);
+		}*/
+	}
+
+	return 0;
+	
+	/*if (strcmp(argv[1], ".") == 0)
 	{}
 	else if (strcmp(argv[1], "..") == 0)
 	{
@@ -85,5 +107,5 @@ int main(int argc, char* argv[])
 		free(path);
 	}
 
-	return 0;
+	return 0;*/
 }

@@ -13,34 +13,7 @@ int main(int argc, char* argv[])
 	
 	readBootSector();
 
-	int currentIndex = 1;
-	
-	
-	do 
-	{
-		printf("/");
-		
-		FILE_HEADER* file = getDirStackIndex(sharedMem, currentIndex);
-		
-		if (file != NULL)
-		{
-			for (int i = 0; i < 8; i++)
-			{
-				if (file->header.file_name[i] != ' ')
-				{
-					printf("%c", file->header.file_name[i]);
-				}
-				else
-				{
-					break;
-				}
-			}
-		}
-		
-		currentIndex++;
-	} while (currentIndex <= sharedMem->stack_top_index);
-
-	printf("\n");
+	printf("%s\n",getWorkingPathFromStack(sharedMem));
 	
 	return 0;
 }

@@ -19,13 +19,15 @@ int main(int argc, char* argv[])
 	
 	readBootSector();
 	
+	FILE_HEADER *selectedFile = NULL;
+	
 	if (strcmp(argv[1], ".") == 0 || strcmp(argv[1], "..") == 0)
 	{
 		printf("Cannot use cat on %s.\n", argv[1]);
 	}
 	else
 	{
-		FILE_HEADER* selectedFile = (FILE_HEADER*)findFile(argv[1], getDirStackTop(sharedMem));
+		findFile(argv[1], getDirStackTop(sharedMem), &selectedFile);
 
 		if (selectedFile != NULL && 
 		    (selectedFile->header.attributes & FILE_ATTR_SUBDIRECTORY) == 0 &&

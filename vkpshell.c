@@ -54,7 +54,8 @@ int main(int argc, char* argv[])
 		openFileSystem(shellShared->image_path);
 	
 		printf(SHELL_PROMPT);
-		printWorkingDirectory(shellShared);
+		//printWorkingDirectory(shellShared);
+		printf(getWorkingPathFromStack(shellShared));
 		printf(": ");
 	
 		char* line = getLine();

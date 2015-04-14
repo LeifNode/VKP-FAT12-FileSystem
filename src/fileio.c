@@ -4,6 +4,12 @@
 
 #include "global_limits.h"
 
+#include "sharedmemory.h"
+
+#include <ctype.h>
+
+extern uint8_t *FILE_SYSTEM;
+
 void getNameFromLongNameFileHeader(const FILE_HEADER_LONGNAME *header, wchar_t *name)
 {
 	//This only works if wchar_t is 16 bits long.
@@ -134,16 +140,28 @@ void readFile(const FILE_HEADER* header, void** buffer)
 	} while (next_cluster < 0xFF0); //While we're not reading the last valid cluster in the file
 }
 
-FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation)
+bool findFileInDir(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_REG** found)
 {
-	///TODO: Check extensions 
-	if (strlen(name) > 8)
+	if(!name)
 	{
-		printf("Specified file name \"%s\" is too long", name);
-		return NULL;
+		*found = NULL;
+		return false;
 	}
 	
-	char fileName[9];
+	/*if(name[0] = '/')
+	{
+		searchLocation = NULL;
+	}*/
+	
+	///TODO: Check extensions 
+	if (strlen(name) > MAX_PATH_SIZE)
+	{
+		printf("Specified file name \"%s\" is too long", name);
+		*found = NULL;
+		return false;
+	}
+	
+	char nextFileName[9];
 	FILE_HEADER_REG* currentHeader = NULL;
 
 	if (searchLocation == NULL) //Search root directory
@@ -155,22 +173,23 @@ FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation)
 		{
 			if (currentHeader->attributes != 0x0f)//Is this a long file name?
 			{
-				memset(fileName, 0, 9);//Clear name
+				memset(nextFileName, 0, 9);//Clear name
 				//Replace spaces in file name with null characters so we can compare names correctly
 				for (int c = 0; c < 8; c++) 
 				{
 					if (currentHeader->file_name[c] == ' ')
 					{
-						fileName[c] = '\0';
+						nextFileName[c] = '\0';
 						break;
 					}
 				
-					fileName[c] = currentHeader->file_name[c];
+					nextFileName[c] = currentHeader->file_name[c];
 				}
 				
-				if (strcmp(name, fileName) == 0)
+				if (strcmp(name, nextFileName) == 0)
 				{
-					return currentHeader;
+					*found = currentHeader;
+					return true;
 				}
 			}
 			
@@ -191,7 +210,7 @@ FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation)
 			{
 				if (currentHeader->attributes != 0x0f)//Is this a long file name?
 				{
-					memset(fileName, 0, 9);//Clear name
+					memset(nextFileName, 0, 9);//Clear name
 					
 					//Replace spaces in file name with null characters so we can compare names correctly
 					//This could be moved to a function at some point
@@ -199,16 +218,21 @@ FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation)
 					{
 						if (currentHeader->file_name[c] == ' ')
 						{
-							fileName[c] = '\0';
+							nextFileName[c] = '\0';
 							break;
 						}
 					
-						fileName[c] = currentHeader->file_name[c];
+						nextFileName[c] = currentHeader->file_name[c];
 					}
 					
-					if (strcmp(name, fileName) == 0)
+					if (strcmp(name, nextFileName) == 0)
 					{
-						return currentHeader;
+						*found = currentHeader;
+						
+						if(isRoot(*found))
+							*found = NULL;
+						
+						return true;
 					}
 				}
 				
@@ -219,7 +243,191 @@ FILE_HEADER_REG* findFile(const char* name, const FILE_HEADER* searchLocation)
 		} while (currentCluster < 0xFF7);//Loop through all subdirectory sectors in chain
 	}
 	
-	return NULL;
+	return false;
+}
+
+bool findFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_REG** found)
+{
+	*found = NULL;
+	
+	//If no name given, then leave.
+	if(!name)
+	{
+		return false;
+	}
+	
+	//Check if the path given should be ignored and set to root automatically set to something else.
+	if(name[0] == '/')
+	{
+		searchLocation = NULL;
+	}
+	
+	//A local variable to hold the pointer to the next file to be found in the loop below and ultimately the file/directory searched for, if found.
+	FILE_HEADER_REG *nextFile = NULL;
+	
+	char *path = strdup(name);
+	
+	for(uint32_t i = 0; i < strlen(path); ++i)
+	{
+		path[i] = toupper(path[i]);
+	}
+	
+	//A variable to hold the next file/directory to look for.
+	char *nextFileName = strtok(path, "/");
+	
+	//Keep tokenizing our path string.
+	while(nextFileName != NULL)
+	{
+		//Check if it couldn't be found and display an error message.
+		if(!findFileInDir(nextFileName, searchLocation, &nextFile))
+		{
+			printf("Could not find file/directory: %s\n", nextFileName);
+			
+			free(path);
+			
+			return false;
+		}
+		
+		if(strcmp(nextFileName, "..") == 0)
+		{	
+			//*****************
+			//HACK ALERT!!!
+			//*****************
+			//Check if root.
+			if((void*)nextFile - (void*)FILE_SYSTEM == 0x4c20)
+			{	
+				searchLocation = NULL;
+				
+				//Set found to null.
+				nextFile = NULL;
+			}
+			
+		}
+		
+		//Get the new next file/directory to look for.
+		nextFileName = strtok(NULL, "/");
+		searchLocation = nextFile;
+	}
+	
+	//We've found the file! Hurray!
+	*found = nextFile;
+	
+	free(path);
+	
+	return true;
+}
+
+bool gotoFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_REG** found)
+{
+	//printf("I got the filename: %s\n", name);
+	
+	if(found)
+	{
+		//Preset our found pointer to null in case we don't find anything by default.
+		*found = NULL;
+	}
+	
+	//Backup our shared memory.
+	SHELL_SHARED_MEMORY tempMem;
+	
+	//if name is null, exit function.
+	if(!name)
+		return false;
+		
+	//Back up the current memory to use as a buffer.
+	memcpy(&tempMem, getSharedMemoryPtr(), sizeof(SHELL_SHARED_MEMORY));
+	
+	//Check if the path given should be ignored and set to root automatically set to something else.
+	if(name[0] == '/')
+	{
+		searchLocation = NULL;
+		
+		//Reset the top index for our stack buffer.
+		tempMem.stack_top_index = 0;
+	}
+	
+	//Convert to uppercase
+	char *path = strdup(name);
+	
+	for(uint32_t i = 0; i < strlen(path); ++i)
+	{
+		path[i] = toupper(path[i]);
+	}
+	
+	//A local variable to hold the pointer to the next file to be found in the loop below and ultimately the file/directory searched for, if found.
+	FILE_HEADER_REG *nextFile = NULL;
+	
+	//A variable to hold the next file/directory to look for.
+	char *nextFileName = strtok(path, "/");
+	
+	//Keep tokenizing our path string.
+	while(nextFileName != NULL)
+	{
+		//Check if it couldn't be found and display an error message.
+		if(!findFileInDir(nextFileName, searchLocation, &nextFile))
+		{
+			printf("Could not find file/directory: %s\n", nextFileName);
+			free(path);
+			return false;
+		}
+		
+		if((nextFile->attributes & FILE_ATTR_SUBDIRECTORY) == 0)
+		{
+			printf("%s is not a directory!\n",nextFileName);
+			free(path);
+			return false;
+		}
+		
+		if(strcmp(nextFileName, "..") == 0)
+		{
+			//Move back a directory for path cosmetic reasons.
+			popDirStack(&tempMem);
+			
+			
+			//*****************
+			//HACK ALERT!!!
+			//*****************
+			//Check if root.
+			if((void*)nextFile - (void*)FILE_SYSTEM == 0x4c20)
+			{
+				//Reset the top index for our stack buffer.
+				tempMem.stack_top_index = 0;
+				
+				searchLocation = NULL;
+				
+				//Set found to null.
+				nextFile = NULL;
+			}
+			
+		}
+		else if(strcmp(nextFileName,".") == 0)
+		{
+			
+		}
+		else
+		{
+			//Since our file header is valid, push it onto the temporary file stack.
+			pushDirStack(&tempMem, (FILE_HEADER*)nextFile);
+		}
+		
+		//Get the new next file/directory to look for.
+		nextFileName = strtok(NULL, "/");
+		
+		searchLocation = nextFile;
+	}
+	
+	if(found)
+	{
+		//We've found the file! Hurray!
+		*found = nextFile;
+	}
+	
+	//Now copy everything back to the actual shared memory.
+	memcpy(getSharedMemoryPtr(), &tempMem, sizeof(SHELL_SHARED_MEMORY));
+	
+	free(path);
+	
+	return true;
 }
 
 void deleteFile(FILE_HEADER* header)
@@ -473,7 +681,7 @@ void cat(const FILE_HEADER_REG* file)
 	free(buffer);
 }
 
-int isRoot(const FILE_HEADER* file)
+bool isRoot(void* file)
 {
-	return file == (FILE_HEADER*)find_sector(ROOT_OFFSET);
+	return file == (void*)find_sector(ROOT_OFFSET);
 }

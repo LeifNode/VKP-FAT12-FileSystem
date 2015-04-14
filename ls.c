@@ -50,7 +50,9 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		thisDir = (FILE_HEADER*)findFile(path, getDirStackTop(sharedMem));
+		//thisDir = (FILE_HEADER*)findFile(path, getDirStackTop(sharedMem));
+		
+		findFile(path, getDirStackTop(sharedMem), &thisDir);
 		
 		if(!thisDir)
 		{
@@ -61,30 +63,30 @@ int main(int argc, char* argv[])
 	
 	//printf("This dir is: %p\n", thisDir);
 	
-	if((thisDir->header.attributes & FILE_ATTR_SUBDIRECTORY) != 0)
-	{	
-		FILE_HEADER_REG *currentHeader;
+	FILE_HEADER_REG *currentHeader = NULL;
+	
+	//Check if we are in root.
+	if(isRoot(thisDir))
+	{
+		printf("CHECKING ROOT\n");
+		//Set currentHeader to root;
+		currentHeader = &thisDir->header;
 		
-		//Check if we are in root.
-		if(isRoot(thisDir))
+		for (int i = 0; i < MAX_FILES_IN_ROOT_DIR; i++)
 		{
-			//Set currentHeader to root;
-			currentHeader = &thisDir->header;
-			
-			for (int i = 0; i < MAX_FILES_IN_ROOT_DIR; i++)
+			if (currentHeader->attributes != 0x0f)//Is this a long file name?
 			{
-				if (currentHeader->attributes != 0x0f)//Is this a long file name?
-				{
-					//if((currentHeader->attributes & FILE_ATTR_HIDDEN) != 0 && *(unsigned char*)(currentHeader) != FILE_DELETED_BYTE)
-					//{
-						//Add file to the list.
-						fileList[fileIndex++] = currentHeader;
-					//}
-				}
+				//if((currentHeader->attributes & FILE_ATTR_HIDDEN) != 0 && *(unsigned char*)(currentHeader) != FILE_DELETED_BYTE)
+				//{
+					//Add file to the list.
+					fileList[fileIndex++] = currentHeader;
+				//}
 			}
 		}
-		else //Search specified directory
-		{
+	}
+	
+	if((thisDir->header.attributes & FILE_ATTR_SUBDIRECTORY) != 0)
+	{	
 			unsigned char* fat = (unsigned char*)find_sector(FAT1_OFFSET);
 			uint16_t currentCluster = thisDir->header.first_logical_cluster;
 			
@@ -110,8 +112,7 @@ int main(int argc, char* argv[])
 				}
 				
 				currentCluster = get_fat_entry(currentCluster, fat);
-			} while (currentCluster < 0xFF7);//Loop through all subdirectory sectors in chain
-		}			
+			} while (currentCluster < 0xFF7);//Loop through all subdirectory sectors in chain			
 	}
 	else
 	{
