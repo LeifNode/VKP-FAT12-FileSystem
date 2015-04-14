@@ -22,6 +22,7 @@ typedef int bool;
 #define true 1
 #define false 0
 
+///@brief	The number of bytes per sector.
 extern uint16_t BYTES_PER_SECTOR;
 
 #endif

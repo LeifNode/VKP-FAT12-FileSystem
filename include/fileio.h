@@ -11,7 +11,7 @@
 #pragma pack(push)
 #pragma pack(1)
 
-///@brief A OS-independent type to store 16-bit characters.
+///@brief An OS-independent type to store 16-bit characters.
 typedef uint16_t char16_t;
 
 ///@brief A struct to store and manipulate long name file headers.
@@ -116,23 +116,33 @@ bool findFileInDir(const char* name, const FILE_HEADER* searchLocation, FILE_HEA
 ///@retval	false	The target file header could not be found.
 bool gotoFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_REG** found);
 
-void deleteFile(FILE_HEADER* header);
-
 ///@brief Given a regular 8.1 file header, prints out the contents of the file to console.
 ///@param [in] file	A pointer to a FILE_HEADER_REG.
 void cat(const FILE_HEADER_REG* file);
 
+///@brief Deletes a file given a pointer to a file header.
+///@param [in]	header	A pointer to the FILE_HEADER of the file to be deleted.
 void deleteFile(FILE_HEADER* header);
 
+///@brief Gets the number of free entries in a provided directory.
+///@param [in]	directory	A pointer to the FILE_HEADER of a directory to get information from.
+///@return	Returns the number of free entries in the given directory.
+///@retval	-1	Obtaining the free entry count was unsuccessful.
 int getDirectoryFreeEntryCount(FILE_HEADER* directory);
 
-//Collapes all files in a directory toward the front then drops any extra sectors.
+///@brief Collapses all files in a directory toward the front then drops any extra sectors.
+///@param [in]	directory	A pointer to the FILE_HEADER of a directory to collapse.
 void collapseDirectory(FILE_HEADER* directory);
 
-//Will expand directory if required
+///@todo Get more info on this.
+///@brief Gets the next free entry of the provided directory?  Will expand directory if required.
+///@param [in]	directory	A pointer to the FILE_HEADER of a directory to get the next free entry of.
 FILE_HEADER_REG* getNextFreeDirectoryEntry(FILE_HEADER* directory);
 
-//Checks if a directory is empty aside from the . and .. entries along with the long files headers
+///@brief Checks if a directory is empty aside from the . and .. entries along with the long file headers.
+///@param [in]	directory	A pointer to the FILE_HEADER of a directory to check.
+///@retval	true	The given directory is empty.
+///@retval	false	The given directory contains entries.
 bool isDirectoryEmpty(FILE_HEADER* directory);
 
 ///@brief Given a regular 8.1 file header, prints out the contents of the file to console.

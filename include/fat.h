@@ -15,10 +15,17 @@ uint16_t get_free_sector_count();
 ///@brief param [in]	end		The number of the last FAT entry to read from (must be at least 2 since first 2 are unused).
 void pfe(int start, int end);
 
+///@brief Frees a FAT chain.
+///@param [in]	fatStart	An index of the fat entry to start at.
+///@param [in]	zeroMemory	A boolean value indicating whether or not to zero the freed memory.
 void freeFatChain(int fatStart, bool zeroMemory);
 
+///@todo Understand this better.
+///@brief Returns the number of the next free sector.
+///@return Returns the number of the next free sector as an unsigned int.
 unsigned int getNextFreeSector();
 
+///@todo Define this.
 unsigned int appendSector(int startSector);
 
 #endif

@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-//A header to deal with an executable file list and a 
+//A header to deal with an executable file list.
 
 //Allocation chunk size for executables list.
 #define EXECUTABLES_ALLOC_CHUNK_SIZE 16
@@ -21,12 +21,13 @@ extern const unsigned char ELF_HEADER_BYTES[ELF_HEADER_SIZE];
 //Windows
 //unsigned char ELF_HEADER[] = { 'M', 'Z' };
 
+///@brief An array of strings of executables allowed by the shell.
 extern char **EXECUTABLES;
 
-//Stores the number of entry slots allocated in the executable list.
+///@brief Stores the number of entry slots allocated in the executable list.
 extern size_t EXECUTABLES_SIZE;
 
-//Stores the actual number of entries populated in the executable list.
+///@brief Stores the actual number of entries populated in the executable list.
 extern size_t NUM_EXECUTABLES;
 
 ///@brief Determines if a file is a valid executable ELF file.

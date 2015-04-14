@@ -5,21 +5,24 @@
 
 #ifdef _WIN32
 
-//Handle for memory map object.
+///@brief Handle for memory map object.
 extern HANDLE hMap;
 
-//Handle for file object.
+///@brief Handle for file object.
 extern HANDLE hImage;
 
 #endif
 
-//Memory map array for file.
+///@brief Memory map array for file.
 extern uint8_t *FILE_SYSTEM;
 
-//Memory maps the file system to FILE_SYSTEM
+///@brief Memory maps the file system to FILE_SYSTEM
+///@param[in] path	A const character string representing a path to an image file to mount.
+///@retval	true	The mount is successful.
+///@retval	false	The mount is unsuccessful.
 bool openFileSystem(const char* path);
 
-//Closes memory map
+///@brief Closes memory map
 void closeFileSystem();
 
 #endif
