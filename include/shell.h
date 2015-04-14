@@ -6,8 +6,8 @@
 #include <unistd.h>
 
 ///@brief	Fork off the shell and execute a process, giving it a list of optional arguments.
-///@param [in]	path		A C-string holding the path to the executable to be run by the forked off shell.
-///@param [in]	arguments	An array of C-string arguments to be passed to the executable to be run by the forked off shell.
+///@param[in]	path		A C-string holding the path to the executable to be run by the forked off shell.
+///@param[in]	arguments	An array of C-string arguments to be passed to the executable to be run by the forked off shell.
 void execProcess(const char* path, char* arguments[]);
 
 ///@todo Understand this a bit better.

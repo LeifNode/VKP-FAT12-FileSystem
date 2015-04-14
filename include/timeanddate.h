@@ -11,16 +11,22 @@
 ///@brief A struct to hold a file time.
 typedef struct FILE_TIME
 {
+	///@brief Five bits to hold number of hours.
 	unsigned int hours			:	5;
+	///@brief Six bits to hold number of minutes.
 	unsigned int minutes		:	6;
+	///@brief Five bits to hold number of seconds (divided by 2).
 	unsigned int doubleseconds	:	5;
 } FILE_TIME;
 
 ///@brief A struct to hold a file date.
 typedef struct FILE_DATE
 {
+	///@brief Seven bits to hold years (since 1980).
 	unsigned int year		:	7;
+	///@brief Four bits to hold month.
 	unsigned int month		:	4;
+	///@brief Five bits to hold day.
 	unsigned int day		:	5;
 } FILE_DATE;
 

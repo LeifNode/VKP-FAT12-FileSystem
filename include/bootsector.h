@@ -54,7 +54,7 @@ BOOT_SECTOR* getBootSector(uint8_t* fileSystem);
 
 /// \brief Prints the contents of the boot sector to stdout
 ///
-/// \param [in]	bootSector	A pointer to a BOOT_SECTOR object holding the information to print.
+/// \param[in]	bootSector	A pointer to a BOOT_SECTOR object holding the information to print.
 void printBootSector(BOOT_SECTOR* bootSector);
 
 #endif

@@ -25,7 +25,7 @@ void createFileDateTime(time_t in, FILE_DATE *date, FILE_TIME *time)
 	
 	if(date)
 	{
-		//Convert from days since 1900 to days since 1980.
+		//Convert from years since 1900 to years since 1980.
 		date->year	=	timeinfo->tm_year - 80;
 		
 		date->month	=	timeinfo->tm_mon;

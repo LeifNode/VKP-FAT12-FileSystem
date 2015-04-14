@@ -31,7 +31,7 @@ extern size_t EXECUTABLES_SIZE;
 extern size_t NUM_EXECUTABLES;
 
 ///@brief Determines if a file is a valid executable ELF file.
-///@param [in] fp	A FILE pointer to an open file.
+///@param[in] fp	A FILE pointer to an open file.
 ///@retval true		The file is a valid ELF.
 ///@retval false	The file is not executable ELF or the file has not been opened.
 bool isELF(FILE *fp);
@@ -40,7 +40,7 @@ bool isELF(FILE *fp);
 void freeExecutableList();
 
 ///@brief Adds an executable to the executables list.
-///@param [in] name	A null-terminated character string representing an executable's filename.
+///@param[in] name	A null-terminated character string representing an executable's filename.
 void addExecutable(char *name);
 
 ///@brief Prints a list of all executables.
@@ -50,7 +50,7 @@ void printExecutables();
 void trimExecutables();	
 
 ///@brief Adds the executables of a directory to the executable list.
-///@param [in] dir	A string path to a directory.
+///@param[in] dir	A string path to a directory.
 void addDirToExecutableList(char *dir);
 
 #endif
