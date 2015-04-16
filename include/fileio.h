@@ -82,7 +82,7 @@ typedef enum FILE_ATTRIBUTE
 
 ///@brief Takes a pointer to a wide character string (at least 13 characters allocated) and populates it with the filename from a longname file header.
 ///@param[in]	header	A pointer to a FILE_HEADER_LONGNAME object.
-///@param [out]	name	A pointer to a wchar_t string (32-bits per char on Linux, 16-bits per char on Windows)
+///@param[out]	name	A pointer to a wchar_t string (32-bits per char on Linux, 16-bits per char on Windows)
 void getNameFromLongNameFileHeader(const FILE_HEADER_LONGNAME *header, wchar_t *name);
 
 ///@brief Prints out the contents of a file header to a human-readable form in the console.
@@ -91,14 +91,14 @@ void printFileHeader(const FILE_HEADER* header);
 
 ///@brief Reads the contents of a file into a function-allocated buffer given a pointer to its file header and a pointer to store the buffer at.
 ///@param[in]	header	A pointer to a FILE_HEADER_REG object.
-///@param [out]	buffer	A pointer to a pointer at which a buffer containing the bytes of the file are allocated by the function.
+///@param[out]	buffer	A pointer to a pointer at which a buffer containing the bytes of the file are allocated by the function.
 ///@todo Should probably have an int/enum return that signifies success/failure and reason for failure
 void readFile(const FILE_HEADER* header, void** buffer);
 
 ///@brief Finds a file header with a specified name (and/or path)
 ///@param[in]	name			The name of the file to search for.
 ///@param[in]	searchLocation	A pointer to a FILE_HEADER object to start searching from. This may be NULL to signify a search of the root directory.
-///@param [out]	found			A pointer to the file header, if found.  This is NULL if root or if not found.
+///@param[out]	found			A pointer to the file header, if found.  This is NULL if root or if not found.
 ///@retval	true	A file header with the information given was found. (If found is NULL and the return value is true, the file is root.)
 ///@retval	false	The target file header could not be found.
 ///@bug	Uses a bit of a hack to circumvent an issue where the ".." entry of a directory leading to root would not work properly, howevre, this hack assumes that the ".." entry is in a certain place.
@@ -107,7 +107,7 @@ bool findFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_R
 ///@brief Finds a file header with a specified name
 ///@param[in]	name			The name of the file to search for.
 ///@param[in]	searchLocation	A pointer to a FILE_HEADER object to start searching from. This may be NULL to signify a search of the root directory.
-///@param [out]	found			A pointer to the file header, if found.  This is NULL if root or if not found.
+///@param[out]	found			A pointer to the file header, if found.  This is NULL if root or if not found.
 ///@retval	true	A file header with the information given was found. (If found is NULL and the return value is true, the file is root.)
 ///@retval	false	The target file header could not be found.
 ///@remark Calls findFile().
@@ -116,7 +116,7 @@ bool findFileInDir(const char* name, const FILE_HEADER* searchLocation, FILE_HEA
 ///@brief Moves within the directory stack to a file header with a specified name (and/or path)
 ///@param[in]	name			The name of the file to search for.
 ///@param[in]	searchLocation	A pointer to a FILE_HEADER object to start searching from. This may be NULL to signify a search of the root directory.
-///@param [out]	found			A pointer to the file header, if found.  This is NULL if root or if not found.
+///@param[out]	found			A pointer to the file header, if found.  This is NULL if root or if not found.
 ///@retval	true	A file header with the information given was found. (If found is NULL and the return value is true, the file is root.)
 ///@retval	false	The target file header could not be found.
 ///@remark Calls findFile().
