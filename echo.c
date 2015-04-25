@@ -5,7 +5,10 @@
 #include "sharedmemory.h"
 #include "fileio.h"
 
-int main(int argc, char* argv[])
+///@brief Main function for echo.
+///@test Echo shall print the first argument provided to it to console.
+///@test If echo is provided with a number of arguments other than one, echo shall exit printing, "Invalid argument count; need something to echo.".
+int echo_main(int argc, char* argv[])
 {
 	if (argc != 2)
 	{
@@ -24,4 +27,9 @@ int main(int argc, char* argv[])
 	putchar('\n');
 
 	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	return echo_main(argc, argv);
 }

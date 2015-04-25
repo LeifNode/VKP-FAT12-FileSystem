@@ -9,10 +9,10 @@
 
 #include "global_limits.h"
 
-//An array to hold files found.
+///@brief An array to hold files found.
 FILE_HEADER_REG* fileList[MAX_LISTABLE_FILES];
 
-///@brief A function to compare two pointers to FILE_HEADER_REG pointers by their file name and extension contents.
+///@brief A function to compare two pointers to FILE_HEADER_REG pointers by their file name and extension contents (alphabetically).
 ///@param[in] file1 A pointer to a pointer to a FILE_HEADER_REG.
 ///@param[in] file2 A pointer to a pointer to a FILE_HEADER_REG.
 ///@return Returns an int value that is 0 if equal, <0 if less, and >0 if greater.
@@ -30,6 +30,8 @@ int compareFileHeaderByName(const FILE_HEADER_REG **file1, const FILE_HEADER_REG
 	return memcmp((*file1)->file_name, (*file2)->file_name, 11);
 }
 
+///@brief A function to print a file's information for ls.
+///@param[in] header A FILE_HEADER_REG pointer to a file, the contents of which to be displayed.
 void listFileEntry(FILE_HEADER_REG *header)
 {
 	//Get file date.
@@ -79,7 +81,15 @@ void listFileEntry(FILE_HEADER_REG *header)
 	putchar('\n');
 }
 
-int main(int argc, char* argv[])
+///@brief Main function for ls.
+///@test If ls is called with no arguments, ls shall list the files and folders of the current working directory, providing their individual FLCs, sizes, dates, and names.
+///@test If ls is called with an argument that is a valid path to a directory, ls shall list the files and folders of the provided directory, displaying their individual FLCs, sizes, dates, and names.
+///@test If ls is called with an argument that is a valid path to a file, ls shall print the listing for that individual file, displaying its FLC, size, date, and name.
+///@test If ls is called with an argument that is an invalid path to a directory, ls shall exit printing, "Could not find path".
+///@test If the arguments provided to ls number more than one, ls shall exit printing, "Too many arguments!".
+///@test Any and all file/folder listings provided by ls shall be sorted in alphabetical order by file name and extension if applicable.
+///@test ls shall not print any file whose attributes are 0 or are 0x0f under any circumstances.
+int ls_main(int argc, char* argv[])
 {
 	
 	if (argc > 2)
@@ -206,4 +216,9 @@ int main(int argc, char* argv[])
 	printf("\n%u files found\n", fileIndex);
 	
 	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	return ls_main(argc, argv);
 }

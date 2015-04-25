@@ -4,7 +4,13 @@
 #include "fat.h"
 #include "sharedmemory.h"
 
-int main(int argc, char* argv[])
+
+///@brief Main function for rm command.
+///@test If rm is given a single argument containing a valid path to a file, rm shall delete that file from the image.
+///@test If rm is given any number of arguments other than one, rm shall exit printing, "Invalid argument count; rm takes the path of the file to remove.".
+///@test If rm is used successfully, rm shall attempt to collapse the directory it is deleting from.
+///@test If rm is given a single argument containing a valid path to a file, however, that file is a subdirectory or long file entry, then rm shall exit printing "Could not rm file [path].".
+int rm_main(int argc, char* argv[])
 {
 	if (argc != 2)
 	{
@@ -45,4 +51,9 @@ int main(int argc, char* argv[])
 	}
 
 	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	return rm_main(argc, argv);
 }

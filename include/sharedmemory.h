@@ -29,7 +29,6 @@ typedef struct SHELL_SHARED_MEMORY
 	void* directory_stack[MAX_DIR_STACK_ENTRIES];
 	
 	///@brief The index of the next free fat.
-	///@todo Is this correct?
 	int next_free_fat;
 } SHELL_SHARED_MEMORY;
 
@@ -65,7 +64,6 @@ FILE_HEADER* getDirStackTop(SHELL_SHARED_MEMORY* sharedMemory);
 ///@return	Returns a pointer to the FILE_HEADER.
 FILE_HEADER* getDirStackIndex(SHELL_SHARED_MEMORY* sharedMemory, int index);
 
-///@todo Is this correct?
 ///@brief	Pops the directory stack and returns a pointer to the topmost FILE_HEADER popped.
 ///@param[in]	sharedMemory	The SHELL_SHARED_MEMORY object to operate on.
 ///@return	Returns a pointer to the FILE_HEADER popped.
@@ -76,9 +74,12 @@ FILE_HEADER* popDirStack(SHELL_SHARED_MEMORY* sharedMemory);
 ///@param[in]	header			The FILE_HEADER pointer to be pushed.
 void pushDirStack(SHELL_SHARED_MEMORY* sharedMemory, FILE_HEADER* header);
 
-///@todo Define and tell difference between printWorkingDirectoryPath().
+///@brief	Prints the working directory.
+///@param[in] sharedMemory	The SHELL_SHARED_MEMORY object to read from.
 void printWorkingDirectory(SHELL_SHARED_MEMORY* sharedMemory);
-///@todo Define and tell difference between printWorkingDirectory().
+
+///@brief	Prints the working directory path.
+///@param[in] sharedMemory	The SHELL_SHARED_MEMORY object to read from.
 void printWorkingDirectoryPath(SHELL_SHARED_MEMORY* sharedMemory);
 
 ///@brief	Returns a working path as a string, given a pointer to a SHELL_SHARED_MEMORY object containing a directory stack.

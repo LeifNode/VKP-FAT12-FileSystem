@@ -3,7 +3,9 @@
 #include "bootsector.h"
 #include "sharedmemory.h"
 
-int main(int argc, char *argv[])
+///@brief Main function for pbs command.
+///@test If pbs is run with any number of arguments, pbs shall print a readout containing information about the boot sector of the currently mounted disk image.
+int pbs_main(int argc, char *argv[])
 {
 	/* if (argc != 2)
 	{
@@ -28,4 +30,9 @@ int main(int argc, char *argv[])
 	//closeFileSystem();
 
 	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	return pbs_main(argc, argv);
 }

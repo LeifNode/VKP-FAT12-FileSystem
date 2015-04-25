@@ -10,10 +10,11 @@
 
 //A header to deal with an executable file list.
 
-//Allocation chunk size for executables list.
+///@brief Allocation chunk size for executables list.
 #define EXECUTABLES_ALLOC_CHUNK_SIZE 16
 
 //#define ELF_HEADER_SIZE sizeof(ELF_HEADER_BYTES)/sizeof(ELF_HEADER_BYTES[0])
+///@brief The amount of initial bytes needed to tell if a file is an ELF executable.
 #define ELF_HEADER_SIZE 4
 
 extern const unsigned char ELF_HEADER_BYTES[ELF_HEADER_SIZE];

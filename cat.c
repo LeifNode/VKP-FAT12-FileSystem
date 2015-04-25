@@ -5,7 +5,13 @@
 #include "sharedmemory.h"
 #include "fileio.h"
 
-int main(int argc, char* argv[])
+///@brief Main function for cat command.
+///@test If given the name of a file path culminating in a file name with an extension, cat shall display file contents.
+///@test If given '.' or '..', cat shall print "Cannot use cat on ./...".
+///@test If number of arguments is greater or less than one, cat shall print "Invalid argument count; cat takes a file name to cat.".
+///@test If path given points to root, attributes indicate a long filename (should never occur), or a file is not a subdirectory, cat shall print "File %s is incompatible with cat.".
+///@test If path given does not lead to a file at all, cat shall print "Could not find file [filename] to cat!".
+int cat_main(int argc, char* argv[])
 {
 	if (argc != 2)
 	{
@@ -51,4 +57,9 @@ int main(int argc, char* argv[])
 	}
 
 	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	return cat_main(argc, argv);
 }

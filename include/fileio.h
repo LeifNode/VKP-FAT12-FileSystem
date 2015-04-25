@@ -104,7 +104,6 @@ void printFileHeader(const FILE_HEADER* header);
 ///@brief Reads the contents of a file into a function-allocated buffer given a pointer to its file header and a pointer to store the buffer at.
 ///@param[in]	header	A pointer to a FILE_HEADER_REG object.
 ///@param[out]	buffer	A pointer to a pointer at which a buffer containing the bytes of the file are allocated by the function.
-///@todo Should probably have an int/enum return that signifies success/failure and reason for failure
 void readFile(const FILE_HEADER* header, void** buffer);
 
 ///@brief Finds a file header with a specified name (and/or path)
@@ -151,7 +150,6 @@ int getDirectoryFreeEntryCount(FILE_HEADER* directory);
 ///@param[in]	directory	A pointer to the FILE_HEADER of a directory to collapse.
 void collapseDirectory(FILE_HEADER* directory);
 
-///@todo Get more info on this.
 ///@brief Gets the next free entry of the provided directory?  Will expand directory if required.
 ///@param[in]	directory	A pointer to the FILE_HEADER of a directory to get the next free entry of.
 FILE_HEADER_REG* getNextFreeDirectoryEntry(FILE_HEADER* directory);

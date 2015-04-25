@@ -6,11 +6,22 @@
 
 #include "pwd.h"
 
-int main(int argc, char* argv[])
+
+///@brief Main function for rmdir command.
+///@test If rmdir is provided with a single argument that is a valid path to a directory, rmdir shall remove that folder from the mounted image.
+///@test If rmdir is provided with a single argument that is a valid path to a directory containing any file and/or directory, rmdir shall exit printing the message, "Directory still has files.".
+///@test If rmdir is provided with a single argument that is a valid path to something other than a subdirectory, or a long file header, rmdir shall exit printing the message, "Specified file [file_name] is not a directory.".
+///@test If rmdir is provided with a single argument that is an invalid path rmdir shall exit printing the message, "Directory [path] could not be found!".
+///@test If rmdir is provided with a number of arguments other than one, rmdir shall exit printing, "Invalid argument count; rmdir takes the path of the directory to remove.".
+///@test If rmdir is directed to delete the current working directory, the working directory has no files within it, and the user name of the current user can be obtained, rmdir shall exit printing "Nice try [user_name], but deleting the directory you are currently in is not allowed.".
+///@test If rmdir is directed to delete the current working directory and the working directory has no files within it, rmdir shall exit printing, "Deleting the directory you are currently in is not allowed.".
+///@test If rmdir successfully deletes a directory, rmdir shall attempt to collapse the parent directory deleted from.
+
+int rmdir_main(int argc, char* argv[])
 {
 	if (argc != 2)
 	{
-		printf("Invalid argument count; rm takes the path of the directory to remove.\n");
+		printf("Invalid argument count; rmdir takes the path of the directory to remove.\n");
 		exit(1);
 	}
 	
@@ -88,4 +99,9 @@ int main(int argc, char* argv[])
 	}
 
 	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	return rmdir_main(argc, argv);
 }

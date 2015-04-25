@@ -5,7 +5,13 @@
 #include "sharedmemory.h"
 #include "fileio.h"
 
-int main(int argc, char* argv[])
+///@brief Main function for cd command.
+///@test If cd is provided with a valid path, the working directory shall be set to that path.
+///@test If there is any quantity of arguments other than one for a path, cd shall exit printing, "Invalid argument count; cd takes a file name to search for.".
+///@test If cd ends up in root, the string "In root!" shall be printed.
+///@test If cd cannot move to the path provided, it shall print "Could not find file/folder: [path]".
+///@test cd shall be able to support . and .. and relative as well as absolute paths.
+int cd_main(int argc, char* argv[])
 {
 	if (argc != 2)
 	{
@@ -108,4 +114,9 @@ int main(int argc, char* argv[])
 	}
 
 	return 0;*/
+}
+
+int main(int argc, char* argv[])
+{
+	return cd_main(argc, argv);
 }

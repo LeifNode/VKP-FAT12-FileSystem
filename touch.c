@@ -9,12 +9,25 @@
 #include <stdio.h>
 #include <ctype.h>
 
-int main(int argc, char* argv[])
+///@brief Main function for touch.
+///@test If provided with a single argument containing a non-existent filename, touch shall create a file with the given name within the current working directory.
+///@test If provided with a single argument containing a path and culminating in a non-existent filename, touch shall create a file with the given filename within the provided directory.
+///@test If provided with anything other than one argument, touch shall exit printing, "Invalid argument count; touch takes the path of the file to create.".
+///@test If provided with a single argument containing a valid path to an existing file or directory, touch shall print "File [file_name] touched." and shall update the timestamp of the file or directory.
+///@test If provided with ".", "..", touch shall exit printing, "[entry] is not allowed.".
+
+///@test If there is not enough room in a directory to add a new file, a successful touch call shall expand the directory before attempting to create the new file.
+
+///@test If during the process of trying to create a new file, touch cannot allocate a file header, touch shall exit printing, "Failed to allocate file header.".
+///@test If during the process of trying to create a new file, mkdir cannot allocate a file sector, touch shall exit printing, "Failed to allocate file sector.".
+
+///@test If successful in creating a file, touch shall add a timestamp accurate to the closest two seconds to the newly created file.
+int touch_main(int argc, char* argv[])
 {	
 	//TODO: relative and absolute file paths
 	if (argc != 2)
 	{
-		printf("Invalid argument count; touch takes the path of the file to remove.\n");
+		printf("Invalid argument count; touch takes the path of the file to create.\n");
 		exit(1);
 	}
 	
@@ -26,7 +39,7 @@ int main(int argc, char* argv[])
 
 	if (strlen(argv[1]) < 2 && (strcmp(argv[1], ".") == 0 || strcmp(argv[1], "..") == 0))
 	{
-		printf("Cannot make file %s.\n", argv[1]);
+		printf("%s is not allowed.\n", argv[1]);
 		exit(1);
 	}
 	
@@ -158,4 +171,9 @@ int main(int argc, char* argv[])
 	free(path);
 	
 	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	return touch_main(argc, argv);
 }

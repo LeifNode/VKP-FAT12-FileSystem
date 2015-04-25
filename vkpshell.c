@@ -13,6 +13,7 @@
 
 #define SHELL_PROMPT "shell~"
 
+///@brief Display a list of shell commands available.
 void showHelp()
 {
 	printf("Shell commands available:\n----------------------\n\n");

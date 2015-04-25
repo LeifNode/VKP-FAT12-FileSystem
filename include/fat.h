@@ -20,12 +20,13 @@ void pfe(int start, int end);
 ///@param[in]	zeroMemory	A boolean value indicating whether or not to zero the freed memory.
 void freeFatChain(int fatStart, bool zeroMemory);
 
-///@todo Understand this better.
 ///@brief Returns the number of the next free sector.
 ///@return Returns the number of the next free sector as an unsigned int.
 unsigned int getNextFreeSector();
 
-///@todo Define this.
+///@brief Links a sector onto the specified sector and updates the FAT tables to extend the FAT entry chain.
+///@param[in] startSector The sector number to append to.
+///@return Returns the sector that was allocated and appended to the end.
 unsigned int appendSector(int startSector);
 
 #endif

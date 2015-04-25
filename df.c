@@ -5,7 +5,9 @@
 #include "sharedmemory.h"
 #include "sectors.h"
 
-int main(int argc, char* argv[])
+///@brief Main function for df command
+///@test If called with any number of arguments, df shall display the number of K-blocks as well as the FAT sector count, the used sector count, the free sector count, and the percentage of sectors used.
+int df_main(int argc, char* argv[])
 {	
 	SHELL_SHARED_MEMORY* sharedMem = mapShared();
 
@@ -40,4 +42,9 @@ int main(int argc, char* argv[])
 	printf("%i\t\t%i\t%i\t\t%.2f\n", fatSectorCount, usedSectorCount, freeSectorCount, percentUsed);
 
 	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	return df_main(argc, argv);
 }

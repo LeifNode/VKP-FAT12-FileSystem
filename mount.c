@@ -3,11 +3,16 @@
 #include "bootsector.h"
 #include "sharedmemory.h"
 
-int main(int argc, char *argv[])
+///@brief Main function for mount command.
+///@test If mount is provided with a single argument describing a valid OS path to a FAT12-formatted bootable floppy image, mount shall load the image and make it available for use as a file system.
+///@test If mount is provided with a single argument describing an invalid OS path, mount shall exit printing, "Could not mount image [image_path]".
+///@test If mount is provided with a number of arguments other than one, mount shall exit printing, "Invalid argument count. mount takes the path of the floppy to mount.".
+///@test if mount has successfully mounted an image in the past during execution, mount shall exit printing, "File system at [mounted_image_path] is already mounted.".
+int mount_main(int argc, char *argv[])
 {
 	if (argc != 2)
 	{
-		printf("Invalid argument count. pbs takes the path of the floppy to mount.\n");
+		printf("Invalid argument count. mount takes the path of the floppy to mount.\n");
 		exit(1);
 	}
 	
@@ -45,4 +50,9 @@ int main(int argc, char *argv[])
 	sharedMem->current_dir_flc = 0;
 	
 	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	return mount_main(argc, argv);
 }

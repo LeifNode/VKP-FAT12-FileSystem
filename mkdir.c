@@ -9,11 +9,24 @@
 #include <stdio.h>
 #include <ctype.h>
 
-int main(int argc, char* argv[])
+///@brief Main function for mkdir.
+///@test If provided with a single argument containing a non-existent filename, mkdir shall create a folder with the given name within the current working directory.
+///@test If provided with a single argument containing a path and culminating in a non-existent filename, mkdir shall create a folder with the given filename within the provided directory.
+///@test If provided with anything other than one argument, mkdir shall exit printing, "Invalid argument count; mkdir takes the path of the directory to create.".
+///@test If provided with a single argument containing a valid path to an existing directory, mkdir shall print "File [file_name] already exists.".
+///@test If provided with ".", "..", mkdir shall exit printing, "[entry] is not allowed.".
+
+///@test If there is not enough room in a directory to add a new directory, a successful mkdir call shall expand the directory before attempting to create the new directory.
+
+///@test If during the process of trying to create a new directory, mkdir cannot allocate a directory header, mkdir shall exit printing, "Failed to allocate directory header.".
+///@test If during the process of trying to create a new directory, mkdir cannot allocate a directory sector, mkdir shall exit printing, "Failed to allocate directory sector.".
+
+///@test If successful in creating a directory, mkdir shall add a timestamp accurate to the closest two seconds to the newly created directory.
+int mkdir_main(int argc, char* argv[])
 {
 	if (argc != 2)
 	{
-		printf("Invalid argument count; touch takes the path of the file to remove.\n");
+		printf("Invalid argument count; mkdir takes the path of the directory to create.\n");
 		exit(1);
 	}
 
@@ -23,9 +36,10 @@ int main(int argc, char* argv[])
 
 	readBootSector();
 
-	if (strlen(argv[1]) < 2 && (strcmp(argv[1], ".") == 0 || strcmp(argv[1], "..") == 0))
+	if (strcmp(argv[1], ".") == 0 || strcmp(argv[1], "..") == 0)
 	{
-		printf("Cannot make directory %s.\n", argv[1]);
+		//printf("Cannot make directory %s.\n", argv[1]);
+		printf("%s is not allowed.\n", argv[1]);
 		exit(1);
 	}
 
@@ -173,4 +187,9 @@ int main(int argc, char* argv[])
 	
 	free(path);
 	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	return mkdir_main(argc, argv);
 }
