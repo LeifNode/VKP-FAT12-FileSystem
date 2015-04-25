@@ -56,11 +56,73 @@ int parseCommand(char* command, char*** commandArr)
 }
 
 void parsePathFileExtension(char* fullPath, char** pathOut, char** fileNameOut, char** extensionOut)
-{
+{	
 	char* currentChar = fullPath;
 	
 	char* fileName = NULL;
 	char* extension = NULL;
+	char* clearChar = NULL;
+	
+	//Find last slash in path
+	while(*currentChar != '\0')
+	{
+		if (*currentChar == '/' || *currentChar == '\\')
+		{
+			fileName = currentChar + 1;
+			clearChar = currentChar;
+		}
+		
+		currentChar++;
+	}
+	
+	/*if (clearChar)
+		*clearChar = ' ';*/
+		
+	if (fileName)
+	{
+		currentChar = fileName;
+	}
+	else
+	{
+		currentChar = fullPath;
+	}
+	
+	clearChar = NULL;
+	
+	//Find the first character of the extension
+	while(*currentChar != '\0')
+	{
+		if (*currentChar == '.')
+		{
+			extension = currentChar + 1;
+			clearChar = currentChar;
+		}
+		
+		currentChar++;
+	}
+	
+	//if (clearChar)
+		//*clearChar = ' ';
+	
+	if (pathOut)
+		*pathOut = fullPath;
+	if (fileNameOut)
+		*fileNameOut = fileName;
+	if (extensionOut)
+		*extensionOut = extension;
+		
+	if (fileName == NULL)
+	{
+		*pathOut = NULL;
+		*fileNameOut = fullPath;
+	}
+}
+
+/*void parsePathFile(char* fullPath, char** pathOut, char** fileNameOut)
+{
+	char* currentChar = fullPath;
+	
+	char* fileName = NULL;
 	char* clearChar = NULL;
 	
 	while(*currentChar != '\0')
@@ -75,7 +137,7 @@ void parsePathFileExtension(char* fullPath, char** pathOut, char** fileNameOut, 
 	}
 	
 	if (clearChar)
-		*clearChar = '\0';
+		*clearChar = ' ';
 		
 	if (fileName)
 	{
@@ -100,7 +162,7 @@ void parsePathFileExtension(char* fullPath, char** pathOut, char** fileNameOut, 
 	}
 	
 	if (clearChar)
-		*clearChar = '\0';
+		*clearChar = ' ';
 	
 	if (pathOut)
 		*pathOut = fullPath;
@@ -114,4 +176,4 @@ void parsePathFileExtension(char* fullPath, char** pathOut, char** fileNameOut, 
 		*pathOut = NULL;
 		*fileNameOut = fullPath;
 	}
-}
+}*/

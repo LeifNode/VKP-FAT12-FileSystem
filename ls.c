@@ -12,13 +12,76 @@
 //An array to hold files found.
 FILE_HEADER_REG* fileList[MAX_LISTABLE_FILES];
 
-int compareFileHeaderByName(const FILE_HEADER *file1, const FILE_HEADER *file2)
+///@brief A function to compare two pointers to FILE_HEADER_REG pointers by their file name and extension contents.
+///@param[in] file1 A pointer to a pointer to a FILE_HEADER_REG.
+///@param[in] file2 A pointer to a pointer to a FILE_HEADER_REG.
+///@return Returns an int value that is 0 if equal, <0 if less, and >0 if greater.
+int compareFileHeaderByName(const FILE_HEADER_REG **file1, const FILE_HEADER_REG **file2)
 {
-	return memcmp(file1->header.file_name, file2->header.file_name, 8);
+	/*char str1[13];
+	char str2[13];
+	
+	strcpy(str1, getFileNameStringFromFileHeader(*file1));
+	strcpy(str2, getFileNameStringFromFileHeader(*file2));
+	
+	return strcmp(str1, str2);*/
+	
+	
+	return memcmp((*file1)->file_name, (*file2)->file_name, 11);
+}
+
+void listFileEntry(FILE_HEADER_REG *header)
+{
+	//Get file date.
+	char date[33];
+	getHumanReadableDateTimeString(&header->last_write_date, &header->last_write_time, date);
+	
+	char data[12];
+	
+	memcpy(data, header->file_name, 11);
+	
+	data[11] = NULL;
+	
+	for(uint32_t i = 0; i < 8; ++i)
+	{
+		if(data[i] == ' ')
+			data[i] = NULL;
+	}
+	
+	for(uint32_t i = 8; i < 11; ++i)
+	{
+		if(data[i] == ' ')
+			data[i] = NULL;;
+	}
+	
+	char *name = data;
+	
+	char *ext = &data[8];
+	
+	char size[9];
+	
+	if(header->attributes & FILE_ATTR_SUBDIRECTORY)
+	{
+		strcpy(size,"DIR");
+	}
+	else
+	{
+		sprintf(size,"%u",header->file_size);
+	}
+	
+	printf("%u\t%s\t%s\t%s", (unsigned int)(header->first_logical_cluster), size, date, name);
+	
+	if(strlen(ext) > 0)
+		printf(".%s", ext);
+	
+	//printf("\t%u", (unsigned int)(header->attributes));
+	
+	putchar('\n');
 }
 
 int main(int argc, char* argv[])
 {
+	
 	if (argc > 2)
 	{
 		printf("Too many arguments!\n");
@@ -43,6 +106,8 @@ int main(int argc, char* argv[])
 	
 	size_t fileIndex = 0;
 	
+	bool found = false;
+	
 	if(!path)
 	{
 		//printf("getting sharedmem %p\n", getDirStackTop(sharedMem));
@@ -52,7 +117,7 @@ int main(int argc, char* argv[])
 	{
 		//thisDir = (FILE_HEADER*)findFile(path, getDirStackTop(sharedMem));
 		
-		findFile(path, getDirStackTop(sharedMem), &thisDir);
+		found = findFile(path, getDirStackTop(sharedMem), &thisDir);
 		
 		if(!thisDir)
 		{
@@ -63,29 +128,35 @@ int main(int argc, char* argv[])
 	
 	//printf("This dir is: %p\n", thisDir);
 	
+	printf("\nFLC:\tSize:\tLast Write Timestamp:\t\t\tName:\n");
+	printf("------------------------------------------------------------\n");
+	
 	FILE_HEADER_REG *currentHeader = NULL;
 	
 	//Check if we are in root.
-	if(isRoot(thisDir))
+	if((thisDir == NULL && found) || (!path && sharedMem->stack_top_index == 0))
 	{
-		printf("CHECKING ROOT\n");
+		//printf("CHECKING ROOT\n");
+		
 		//Set currentHeader to root;
-		currentHeader = &thisDir->header;
+		currentHeader = (FILE_HEADER_REG*)find_sector(ROOT_OFFSET);//&thisDir->header;
 		
 		for (int i = 0; i < MAX_FILES_IN_ROOT_DIR; i++)
 		{
-			if (currentHeader->attributes != 0x0f)//Is this a long file name?
+			if (currentHeader->attributes != 0 && (unsigned char)currentHeader->file_name[0] != FILE_DELETED_BYTE && currentHeader->attributes != 0x0f)//Is this an invalid entry or a long file name?
 			{
 				//if((currentHeader->attributes & FILE_ATTR_HIDDEN) != 0 && *(unsigned char*)(currentHeader) != FILE_DELETED_BYTE)
 				//{
 					//Add file to the list.
 					fileList[fileIndex++] = currentHeader;
+					//listFileEntry(currentHeader);
 				//}
 			}
+			
+			currentHeader++;
 		}
 	}
-	
-	if((thisDir->header.attributes & FILE_ATTR_SUBDIRECTORY) != 0)
+	else if((thisDir->header.attributes & FILE_ATTR_SUBDIRECTORY) != 0)
 	{	
 			unsigned char* fat = (unsigned char*)find_sector(FAT1_OFFSET);
 			uint16_t currentCluster = thisDir->header.first_logical_cluster;
@@ -97,14 +168,16 @@ int main(int argc, char* argv[])
 				
 				for (int i = 0; i < 16; i++)
 				{
-					if (currentHeader->attributes != 0x0f && currentHeader->first_logical_cluster != 0)//Is this a long file name?
+					if (currentHeader->attributes != 0x0f && (unsigned char)currentHeader->file_name[0] != FILE_DELETED_BYTE && currentHeader->attributes != 0)//Is this a long file name?
 					{
 						//if((currentHeader->attributes & FILE_ATTR_HIDDEN) != 0 && *(unsigned char*)(currentHeader) != FILE_DELETED_BYTE)
 						//{
 							//Add file to the list.
 							fileList[fileIndex++] = currentHeader;
 							
-							printFileHeader(currentHeader);
+							//listFileEntry(currentHeader);
+							
+							//printFileHeader(currentHeader);
 						//}
 					}
 					
@@ -116,28 +189,21 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		printf("That is not a directory!\n");
+		listFileEntry(thisDir);
 		exit(1);
 	}
 	
-	printf("%u files found\n", fileIndex);
-	
 	//Sort by name.
-	//qsort(fileList, fileIndex, sizeof(FILE_HEADER), compareFileHeaderByName);
+	qsort(fileList, fileIndex, sizeof(FILE_HEADER_REG*), compareFileHeaderByName);
 	
 	//Now we can display.
 	
-	char fileName[9];
-	
-	memset(fileName, 0, 9);
-	
 	for(size_t i = 0; i < fileIndex; ++i)
 	{
-		//for(size_t j = 0; j < 8; j++)
-			//putchar(fileList[i]->file_name[j]);
-		memcpy(fileName, &fileList[i]->file_name, 8);
-		//printf("%s\n", fileName);
+		listFileEntry(fileList[i]);
 	}
+	
+	printf("\n%u files found\n", fileIndex);
 	
 	return 0;
 }

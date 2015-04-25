@@ -70,6 +70,10 @@ void printExecutables()
 {
 	for(int i = 0; i < NUM_EXECUTABLES; ++i)
 	{
+		// This could read:
+		//	printf("* %s\n", strrchr(EXECUTABLES[i],'/') + 1);
+		// to just display the executable name.
+		
         printf("%s\n", EXECUTABLES[i]);
 	}
 }

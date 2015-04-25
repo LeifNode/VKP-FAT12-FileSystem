@@ -29,20 +29,25 @@ int main(int argc, char* argv[])
 	{
 		findFile(argv[1], getDirStackTop(sharedMem), &selectedFile);
 
-		if (selectedFile != NULL && 
-		    (selectedFile->header.attributes & FILE_ATTR_SUBDIRECTORY) == 0 &&
-			selectedFile->header.attributes != 0x0f && 
-			selectedFile->header.first_logical_cluster != 0 &&
-			selectedFile->header.file_size > 0)//Make sure this file is valid
+		if(selectedFile != NULL)
 		{
-			cat(&selectedFile->header);
-			
-			printf("\n");
+			if ((selectedFile->header.attributes & FILE_ATTR_SUBDIRECTORY) == 0 &&
+				selectedFile->header.attributes != 0x0f && 
+				selectedFile->header.first_logical_cluster != 0 /*&&
+				selectedFile->header.file_size > 0*/)//Make sure this file is valid
+			{
+				cat(&selectedFile->header);
+				
+				printf("\n");
+			}
+			else
+			{
+				printf("File %s is incompatible with cat.\n", getFileNameStringFromFileHeader(selectedFile));
+			}
 		}
 		else
-		{
-			printf("Could not cat file %s.\n", argv[1]);
-		}
+			printf("Could not find file %s to cat!\n", argv[1]);
+		
 	}
 
 	return 0;

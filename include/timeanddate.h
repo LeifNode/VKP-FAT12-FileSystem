@@ -11,21 +11,21 @@
 ///@brief A struct to hold a file time.
 typedef struct FILE_TIME
 {
-	///@brief Five bits to hold number of hours.
-	unsigned int hours			:	5;
-	///@brief Six bits to hold number of minutes.
-	unsigned int minutes		:	6;
 	///@brief Five bits to hold number of seconds (divided by 2).
 	unsigned int doubleseconds	:	5;
+	///@brief Six bits to hold number of minutes.
+	unsigned int minutes		:	6;
+	///@brief Five bits to hold number of hours.
+	unsigned int hours			:	5;
 } FILE_TIME;
 
 ///@brief A struct to hold a file date.
 typedef struct FILE_DATE
 {
-	///@brief Seven bits to hold years (since 1980).
-	unsigned int year		:	7;
 	///@brief Four bits to hold month.
 	unsigned int month		:	4;
+	///@brief Seven bits to hold years (since 1980).
+	unsigned int year		:	7;
 	///@brief Five bits to hold day.
 	unsigned int day		:	5;
 } FILE_DATE;
@@ -44,6 +44,13 @@ void createFileDateTime(time_t in, FILE_DATE *date, FILE_TIME *time);
 ///@param[out]	out		A pointer to an allocated tm struct. Can be NULL.
 ///@return Returns a time_t of the time inputted.
 time_t timeDateToCTime(const FILE_DATE *date, const FILE_TIME *time, struct tm *out);
+
+
+///@brief Populates a pre-allocated string buffer with the date and/or time provided.
+///@param[in]	date	An optional FILE_DATE object. (Use NULL to negate.)
+///@param[in]	time	An optional FILE_TIME object. (Use NULL to negate.)
+///@param[out]	out		A pre-allocated string buffer large enough to contain the date and/or time string produced.
+void getHumanReadableDateTimeString(const FILE_DATE *date, const FILE_TIME *time, char *out);
 
 ///@brief Provides a human-readable date string given a FILE_DATE object.
 ///@param[in]	date	A FILE_DATE struct.

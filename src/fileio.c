@@ -10,6 +10,125 @@
 
 extern uint8_t *FILE_SYSTEM;
 
+char* getFileHeaderNameChunkFromFileNameString(char *filenameString)
+{	
+	static char buffer[11];
+	
+	if(filenameString == NULL)
+	{
+		return NULL;
+	}
+	
+	//Pre-fill with spaces.
+	memset(buffer, ' ', 11);
+	
+	if(filenameString[0] == '.')
+	{
+		if(strcmp(filenameString, "..") == 0 || strcmp(filenameString, ".") == 0)
+		{
+			for(int i = 0; i < strlen(filenameString); i++)
+			{
+				buffer[i] = filenameString[i];
+			}
+			
+			return buffer;
+		}
+	}
+	
+	//Temporarily store a duplicate of input string to be mangled by strtok.
+	char *tmp = strdup(filenameString);
+	
+	//Set size.
+	uint32_t siz = strlen(tmp);
+	
+	//Make tmp uppercase.
+	for(uint32_t i = 0; i < siz; ++i)
+	{
+		tmp[i] = toupper(tmp[i]);
+	}
+	
+	char *saveptr;
+	
+	//Get tokenized string.
+	char *pch = strtok_r(tmp, ".", &saveptr);
+	
+	//Set size.
+	siz = strlen(pch);
+	
+	
+	uint32_t i;
+	
+	//Start copying filename.
+	for(i = 0; i < 8, i < siz; ++i)
+	{
+		//Don't!!!! Replace space with underscore.
+		//if(pch[i] == ' ')
+			//pch[i] = '_';
+		
+		//Copy a character.
+		buffer[i] = pch[i];
+	}
+	
+	//Get extension if extant.
+	pch = strtok_r(NULL, ".", &saveptr);
+	
+	
+	if(pch)
+	{
+		//Get extension length.
+		siz = strlen(pch);
+		
+		//Start copying extension.
+		for(i = 0; i < 3, i < siz; ++i)
+		{
+			buffer[i+8] = pch[i];
+		}
+	}
+	
+	free(tmp);
+	
+	return buffer;
+}
+
+char* getFileNameStringFromFileHeader(FILE_HEADER_REG *header)
+{
+	static char buffer[13];
+	
+	if(!header)
+		return NULL;
+	
+	memset(buffer, NULL, 13);
+
+	char *pos = header->file_name;
+	
+	char *out = buffer;
+	
+	uint32_t i;
+	
+	for(i = 0; i < 8; ++i)
+	{
+		if(*pos == ' ')
+			break;
+		
+		*(out++) = *(pos++);
+	}
+	
+	pos = header->extension;
+	
+	if(*pos != ' ')
+		*(out++) = '.';
+	
+	for(i = 0; i < 3; ++i)
+	{
+		if(*pos == ' ')
+			break;
+		
+		*(out++) = *(pos++);
+	}
+	
+	return buffer;
+}
+
 void getNameFromLongNameFileHeader(const FILE_HEADER_LONGNAME *header, wchar_t *name)
 {
 	//This only works if wchar_t is 16 bits long.
@@ -161,7 +280,7 @@ bool findFileInDir(const char* name, const FILE_HEADER* searchLocation, FILE_HEA
 		return false;
 	}
 	
-	char nextFileName[9];
+	char *nextFileName = getFileHeaderNameChunkFromFileNameString(name);
 	FILE_HEADER_REG* currentHeader = NULL;
 
 	if (searchLocation == NULL) //Search root directory
@@ -172,21 +291,8 @@ bool findFileInDir(const char* name, const FILE_HEADER* searchLocation, FILE_HEA
 		for (int i = 0; i < MAX_FILES_IN_ROOT_DIR; i++)
 		{
 			if (currentHeader->attributes != 0x0f)//Is this a long file name?
-			{
-				memset(nextFileName, 0, 9);//Clear name
-				//Replace spaces in file name with null characters so we can compare names correctly
-				for (int c = 0; c < 8; c++) 
-				{
-					if (currentHeader->file_name[c] == ' ')
-					{
-						nextFileName[c] = '\0';
-						break;
-					}
-				
-					nextFileName[c] = currentHeader->file_name[c];
-				}
-				
-				if (strcmp(name, nextFileName) == 0)
+			{				
+				if (memcmp(nextFileName, currentHeader->file_name, 11) == 0)
 				{
 					*found = currentHeader;
 					return true;
@@ -209,23 +315,8 @@ bool findFileInDir(const char* name, const FILE_HEADER* searchLocation, FILE_HEA
 			for (int i = 0; i < 16; i++)
 			{
 				if (currentHeader->attributes != 0x0f)//Is this a long file name?
-				{
-					memset(nextFileName, 0, 9);//Clear name
-					
-					//Replace spaces in file name with null characters so we can compare names correctly
-					//This could be moved to a function at some point
-					for (int c = 0; c < 8; c++) 
-					{
-						if (currentHeader->file_name[c] == ' ')
-						{
-							nextFileName[c] = '\0';
-							break;
-						}
-					
-						nextFileName[c] = currentHeader->file_name[c];
-					}
-					
-					if (strcmp(name, nextFileName) == 0)
+				{	
+					if (memcmp(nextFileName, currentHeader->file_name, 11) == 0)
 					{
 						*found = currentHeader;
 						
@@ -272,8 +363,10 @@ bool findFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_R
 		path[i] = toupper(path[i]);
 	}
 	
+	char *saveptr;
+	
 	//A variable to hold the next file/directory to look for.
-	char *nextFileName = strtok(path, "/");
+	char *nextFileName = strtok_r(path, "/", &saveptr);
 	
 	//Keep tokenizing our path string.
 	while(nextFileName != NULL)
@@ -281,7 +374,7 @@ bool findFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_R
 		//Check if it couldn't be found and display an error message.
 		if(!findFileInDir(nextFileName, searchLocation, &nextFile))
 		{
-			printf("Could not find file/directory: %s\n", nextFileName);
+			//printf("Could not find file/directory: %s\n", nextFileName);
 			
 			free(path);
 			
@@ -290,11 +383,8 @@ bool findFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_R
 		
 		if(strcmp(nextFileName, "..") == 0)
 		{	
-			//*****************
-			//HACK ALERT!!!
-			//*****************
 			//Check if root.
-			if((void*)nextFile - (void*)FILE_SYSTEM == 0x4c20)
+			if(nextFile->first_logical_cluster == 0x00)
 			{	
 				searchLocation = NULL;
 				
@@ -305,7 +395,9 @@ bool findFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_R
 		}
 		
 		//Get the new next file/directory to look for.
-		nextFileName = strtok(NULL, "/");
+		nextFileName = strtok_r(NULL, "/", &saveptr);
+		
+		//Set new search location.
 		searchLocation = nextFile;
 	}
 	
@@ -357,8 +449,10 @@ bool gotoFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_R
 	//A local variable to hold the pointer to the next file to be found in the loop below and ultimately the file/directory searched for, if found.
 	FILE_HEADER_REG *nextFile = NULL;
 	
+	char *saveptr;
+	
 	//A variable to hold the next file/directory to look for.
-	char *nextFileName = strtok(path, "/");
+	char *nextFileName = strtok_r(path, "/", &saveptr);
 	
 	//Keep tokenizing our path string.
 	while(nextFileName != NULL)
@@ -366,7 +460,7 @@ bool gotoFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_R
 		//Check if it couldn't be found and display an error message.
 		if(!findFileInDir(nextFileName, searchLocation, &nextFile))
 		{
-			printf("Could not find file/directory: %s\n", nextFileName);
+			//printf("Could not find file/directory: %s\n", nextFileName);
 			free(path);
 			return false;
 		}
@@ -383,12 +477,8 @@ bool gotoFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_R
 			//Move back a directory for path cosmetic reasons.
 			popDirStack(&tempMem);
 			
-			
-			//*****************
-			//HACK ALERT!!!
-			//*****************
 			//Check if root.
-			if((void*)nextFile - (void*)FILE_SYSTEM == 0x4c20)
+			if(nextFile->first_logical_cluster == 0x00)
 			{
 				//Reset the top index for our stack buffer.
 				tempMem.stack_top_index = 0;
@@ -411,7 +501,7 @@ bool gotoFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_R
 		}
 		
 		//Get the new next file/directory to look for.
-		nextFileName = strtok(NULL, "/");
+		nextFileName = strtok_r(NULL, "/", &saveptr);
 		
 		searchLocation = nextFile;
 	}

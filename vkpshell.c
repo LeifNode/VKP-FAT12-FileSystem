@@ -16,6 +16,7 @@
 void showHelp()
 {
 	printf("Shell commands available:\n----------------------\n\n");
+	printf("Type 'help' to view this list again.\n\n");
 	printExecutables();
 }
 
@@ -73,6 +74,7 @@ int main(int argc, char* argv[])
 			else if (strcmp(command[0], "help") == 0)
 			{
 				showHelp();
+				putchar('\n');
 			}
 			/*else if (strcmp(command[0], "pbs") == 0)
 			{

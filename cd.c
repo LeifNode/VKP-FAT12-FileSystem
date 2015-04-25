@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	
 	if(!gotoFile(name, getDirStackTop(sharedMem), &found))
 	{
-		fprintf(stderr, "Could not find file/folder: %s !", name);
+		fprintf(stderr, "Could not find file/folder: %s\n", name);
 	}
 	else
 	{

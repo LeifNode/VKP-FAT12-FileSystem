@@ -16,4 +16,7 @@ int parseCommand(char* command, char*** commandArr);
 ///@todo Understand this a bit better.
 void parsePathFileExtension(char* fullPath, char** pathOut, char** fileNameOut, char** extensionOut);
 
+///@todo Understand this a bit better.
+//void parsePathFile(char* fullPath, char** pathOut, char** fileNameOut);
+
 #endif

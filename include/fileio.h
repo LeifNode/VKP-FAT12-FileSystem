@@ -80,6 +80,18 @@ typedef enum FILE_ATTRIBUTE
 
 #define FILE_DELETED_BYTE	0xE5
 
+///@brief Gives an 11-byte name and extension block for a file header from a filename string.
+///@remark Uses a static internal buffer char[11].  Not thread-safe.
+///@param[in]	filenameString	A string containing a file name and extension (ex. "hello.txt").
+///@return Returns a static 11-char buffer that should match a file header's first 11 bytes (name and extension).
+char* getFileHeaderNameChunkFromFileNameString(char *filenameString);
+
+///@brief Gives a filename as a string from a file header.
+///@remark Uses a static internal string buffer.  Not thread-safe.
+///@param[in]	header	A file header pointer.
+///@return Returns a pointer to a static string buffer containing the file name and extension as a human-readable string.
+char* getFileNameStringFromFileHeader(FILE_HEADER_REG *header);
+
 ///@brief Takes a pointer to a wide character string (at least 13 characters allocated) and populates it with the filename from a longname file header.
 ///@param[in]	header	A pointer to a FILE_HEADER_LONGNAME object.
 ///@param[out]	name	A pointer to a wchar_t string (32-bits per char on Linux, 16-bits per char on Windows)
@@ -101,7 +113,6 @@ void readFile(const FILE_HEADER* header, void** buffer);
 ///@param[out]	found			A pointer to the file header, if found.  This is NULL if root or if not found.
 ///@retval	true	A file header with the information given was found. (If found is NULL and the return value is true, the file is root.)
 ///@retval	false	The target file header could not be found.
-///@bug	Uses a bit of a hack to circumvent an issue where the ".." entry of a directory leading to root would not work properly, howevre, this hack assumes that the ".." entry is in a certain place.
 bool findFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_REG** found);
 
 ///@brief Finds a file header with a specified name
@@ -120,7 +131,6 @@ bool findFileInDir(const char* name, const FILE_HEADER* searchLocation, FILE_HEA
 ///@retval	true	A file header with the information given was found. (If found is NULL and the return value is true, the file is root.)
 ///@retval	false	The target file header could not be found.
 ///@remark Calls findFile().
-///@bug	Uses a bit of a hack to circumvent an issue where the ".." entry of a directory leading to root would not work properly, howevre, this hack assumes that the ".." entry is in a certain place.
 bool gotoFile(const char* name, const FILE_HEADER* searchLocation, FILE_HEADER_REG** found);
 
 ///@brief Given a regular 8.1 file header, prints out the contents of the file to console.
